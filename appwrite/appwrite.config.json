@@ -1,0 +1,375 @@
+{
+    "projectId": "69198716000def3ecd89",
+    "projectName": "SnapGram",
+    "settings": {
+        "services": {
+            "account": true,
+            "avatars": true,
+            "databases": true,
+            "locale": true,
+            "health": true,
+            "storage": true,
+            "teams": true,
+            "users": true,
+            "sites": true,
+            "functions": true,
+            "graphql": true,
+            "messaging": true
+        },
+        "auth": {
+            "methods": {
+                "jwt": true,
+                "phone": true,
+                "invites": true,
+                "anonymous": true,
+                "email-otp": true,
+                "magic-url": true,
+                "email-password": true
+            },
+            "security": {
+                "duration": 31536000,
+                "limit": 0,
+                "sessionsLimit": 10,
+                "passwordHistory": 0,
+                "passwordDictionary": false,
+                "personalDataCheck": false,
+                "sessionAlerts": false,
+                "mockNumbers": []
+            }
+        }
+    },
+    "tablesDB": [
+        {
+            "$id": "6919b369000578773dc6",
+            "name": "snapgram",
+            "enabled": true
+        }
+    ],
+    "tables": [
+        {
+            "$id": "posts",
+            "$permissions": [
+                "create(\"any\")",
+                "read(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "6919b369000578773dc6",
+            "name": "Posts",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "creator",
+                    "type": "relationship",
+                    "required": false,
+                    "array": false,
+                    "relatedTable": "users",
+                    "relationType": "manyToOne",
+                    "twoWay": true,
+                    "twoWayKey": "posts",
+                    "onDelete": "setNull",
+                    "side": "parent"
+                },
+                {
+                    "key": "caption",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 2200,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "tags",
+                    "type": "string",
+                    "required": false,
+                    "array": true,
+                    "size": 2200,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "imageUrl",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "format": "url",
+                    "default": null
+                },
+                {
+                    "key": "imageId",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 2200,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "location",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 2200,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "save",
+                    "type": "relationship",
+                    "required": false,
+                    "array": false,
+                    "relatedTable": "saves",
+                    "relationType": "manyToOne",
+                    "twoWay": true,
+                    "twoWayKey": "post",
+                    "onDelete": "setNull",
+                    "side": "child"
+                },
+                {
+                    "key": "likesCount",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": 0,
+                    "max": 9223372036854775807,
+                    "default": 0
+                },
+                {
+                    "key": "savesCount",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": 0,
+                    "max": 9223372036854775807,
+                    "default": 0
+                },
+                {
+                    "key": "likes",
+                    "type": "relationship",
+                    "required": false,
+                    "array": false,
+                    "relatedTable": "likes",
+                    "relationType": "manyToOne",
+                    "twoWay": true,
+                    "twoWayKey": "post",
+                    "onDelete": "cascade",
+                    "side": "child"
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "caption",
+                    "type": "fulltext",
+                    "status": "available",
+                    "columns": [
+                        "caption"
+                    ],
+                    "orders": [
+                        "DESC"
+                    ]
+                }
+            ]
+        },
+        {
+            "$id": "users",
+            "$permissions": [
+                "create(\"any\")",
+                "read(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "6919b369000578773dc6",
+            "name": "Users",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "posts",
+                    "type": "relationship",
+                    "required": false,
+                    "array": false,
+                    "relatedTable": "posts",
+                    "relationType": "manyToOne",
+                    "twoWay": true,
+                    "twoWayKey": "creator",
+                    "onDelete": "setNull",
+                    "side": "child"
+                },
+                {
+                    "key": "name",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 2200,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "username",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 2200,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "email",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "format": "email",
+                    "default": null
+                },
+                {
+                    "key": "bio",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 2200,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "imageId",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 2200,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "imageUrl",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "format": "url",
+                    "default": null
+                },
+                {
+                    "key": "save",
+                    "type": "relationship",
+                    "required": false,
+                    "array": false,
+                    "relatedTable": "saves",
+                    "relationType": "manyToOne",
+                    "twoWay": true,
+                    "twoWayKey": "user",
+                    "onDelete": "setNull",
+                    "side": "child"
+                },
+                {
+                    "key": "liked",
+                    "type": "relationship",
+                    "required": false,
+                    "array": false,
+                    "relatedTable": "likes",
+                    "relationType": "manyToOne",
+                    "twoWay": true,
+                    "twoWayKey": "user",
+                    "onDelete": "cascade",
+                    "side": "child"
+                }
+            ],
+            "indexes": []
+        },
+        {
+            "$id": "saves",
+            "$permissions": [
+                "create(\"any\")",
+                "read(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "6919b369000578773dc6",
+            "name": "Saves",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "user",
+                    "type": "relationship",
+                    "required": false,
+                    "array": false,
+                    "relatedTable": "users",
+                    "relationType": "manyToOne",
+                    "twoWay": true,
+                    "twoWayKey": "save",
+                    "onDelete": "setNull",
+                    "side": "parent"
+                },
+                {
+                    "key": "post",
+                    "type": "relationship",
+                    "required": false,
+                    "array": false,
+                    "relatedTable": "posts",
+                    "relationType": "manyToOne",
+                    "twoWay": true,
+                    "twoWayKey": "save",
+                    "onDelete": "setNull",
+                    "side": "parent"
+                }
+            ],
+            "indexes": []
+        },
+        {
+            "$id": "likes",
+            "$permissions": [
+                "create(\"any\")",
+                "read(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "6919b369000578773dc6",
+            "name": "Likes",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "post",
+                    "type": "relationship",
+                    "required": false,
+                    "array": false,
+                    "relatedTable": "posts",
+                    "relationType": "manyToOne",
+                    "twoWay": true,
+                    "twoWayKey": "likes",
+                    "onDelete": "cascade",
+                    "side": "parent"
+                },
+                {
+                    "key": "user",
+                    "type": "relationship",
+                    "required": false,
+                    "array": false,
+                    "relatedTable": "users",
+                    "relationType": "manyToOne",
+                    "twoWay": true,
+                    "twoWayKey": "liked",
+                    "onDelete": "cascade",
+                    "side": "parent"
+                }
+            ],
+            "indexes": []
+        }
+    ],
+    "buckets": [
+        {
+            "$id": "6919b3420008e139d7a9",
+            "$permissions": [],
+            "fileSecurity": false,
+            "name": "media",
+            "enabled": true,
+            "maximumFileSize": 30000000,
+            "allowedFileExtensions": [],
+            "compression": "none",
+            "encryption": true,
+            "antivirus": true
+        }
+    ],
+    "functions": []
+}

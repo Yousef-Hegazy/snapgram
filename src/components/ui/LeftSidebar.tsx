@@ -1,0 +1,49 @@
+import { Link } from '@tanstack/react-router'
+import LeftSidebarLink from './LeftSidebarLink'
+import TopbarLogoutBtn from './TopbarLogoutBtn'
+import type { Users } from 'appwrite/types/appwrite'
+import { sidebarLinks } from '@/lib/constants'
+
+const LeftSidebar = ({ user }: { user: Users | null }) => {
+  return (
+    <nav className="leftsidebar">
+      <div className="flex flex-col gap-11">
+        <Link to="/" className="flex gap-3 items-center">
+          <img
+            src="/images/logo.svg"
+            alt="Snapgram Logo"
+            width={170}
+            height={36}
+          />
+        </Link>
+
+        <Link to="/profile/$id" params={{ id: user?.$id || "" }} className="flex gap-3 items-center">
+          <img
+            src={user?.imageUrl || '/images/profile-placeholder.svg'}
+            alt="profile"
+            width={56}
+            height={56}
+            className="rounded-full"
+          />
+
+          <div className="flex flex-col">
+            <p className="body-bold">{user?.name}</p>
+            <p className="small-regular text-light-3">@{user?.username}</p>
+          </div>
+        </Link>
+
+        <ul className="flex flex-col gap-6">
+          {sidebarLinks.map((l) => (
+            <LeftSidebarLink key={l.route} link={l} />
+          ))}
+        </ul>
+      </div>
+
+      <TopbarLogoutBtn>
+        <span className="small-medium lg:base-medium">Logout</span>
+      </TopbarLogoutBtn>
+    </nav>
+  )
+}
+
+export default LeftSidebar
