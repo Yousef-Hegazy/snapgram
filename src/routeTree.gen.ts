@@ -9,58 +9,193 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ProtectedRouteRouteImport } from './routes/_protected/route'
+import { Route as AuthRouteRouteImport } from './routes/_auth/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ProfileIdRouteImport } from './routes/profile.$id'
-import { Route as DemoTanstackQueryRouteImport } from './routes/demo/tanstack-query'
+import { Route as ProfileIdRouteImport } from './routes/profile_/$id'
+import { Route as ProtectedSavedRouteImport } from './routes/_protected/saved'
+import { Route as ProtectedExploreRouteImport } from './routes/_protected/explore'
+import { Route as ProtectedAllUsersRouteImport } from './routes/_protected/all-users'
+import { Route as AuthSignUpRouteImport } from './routes/_auth/sign-up'
+import { Route as AuthSignInRouteImport } from './routes/_auth/sign-in'
+import { Route as ProtectedPostsIndexRouteImport } from './routes/_protected/posts/index'
+import { Route as ProtectedPostsCreateRouteImport } from './routes/_protected/posts/create'
+import { Route as ProtectedPostsIdIndexRouteImport } from './routes/_protected/posts/$id/index'
+import { Route as ProtectedPostsIdEditRouteImport } from './routes/_protected/posts/$id/edit'
 
+const ProtectedRouteRoute = ProtectedRouteRouteImport.update({
+  id: '/_protected',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRouteRoute = AuthRouteRouteImport.update({
+  id: '/_auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProfileIdRoute = ProfileIdRouteImport.update({
-  id: '/profile/$id',
+  id: '/profile_/$id',
   path: '/profile/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DemoTanstackQueryRoute = DemoTanstackQueryRouteImport.update({
-  id: '/demo/tanstack-query',
-  path: '/demo/tanstack-query',
-  getParentRoute: () => rootRouteImport,
+const ProtectedSavedRoute = ProtectedSavedRouteImport.update({
+  id: '/saved',
+  path: '/saved',
+  getParentRoute: () => ProtectedRouteRoute,
+} as any)
+const ProtectedExploreRoute = ProtectedExploreRouteImport.update({
+  id: '/explore',
+  path: '/explore',
+  getParentRoute: () => ProtectedRouteRoute,
+} as any)
+const ProtectedAllUsersRoute = ProtectedAllUsersRouteImport.update({
+  id: '/all-users',
+  path: '/all-users',
+  getParentRoute: () => ProtectedRouteRoute,
+} as any)
+const AuthSignUpRoute = AuthSignUpRouteImport.update({
+  id: '/sign-up',
+  path: '/sign-up',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
+const AuthSignInRoute = AuthSignInRouteImport.update({
+  id: '/sign-in',
+  path: '/sign-in',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
+const ProtectedPostsIndexRoute = ProtectedPostsIndexRouteImport.update({
+  id: '/posts/',
+  path: '/posts/',
+  getParentRoute: () => ProtectedRouteRoute,
+} as any)
+const ProtectedPostsCreateRoute = ProtectedPostsCreateRouteImport.update({
+  id: '/posts/create',
+  path: '/posts/create',
+  getParentRoute: () => ProtectedRouteRoute,
+} as any)
+const ProtectedPostsIdIndexRoute = ProtectedPostsIdIndexRouteImport.update({
+  id: '/posts/$id/',
+  path: '/posts/$id/',
+  getParentRoute: () => ProtectedRouteRoute,
+} as any)
+const ProtectedPostsIdEditRoute = ProtectedPostsIdEditRouteImport.update({
+  id: '/posts/$id/edit',
+  path: '/posts/$id/edit',
+  getParentRoute: () => ProtectedRouteRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/demo/tanstack-query': typeof DemoTanstackQueryRoute
+  '/sign-in': typeof AuthSignInRoute
+  '/sign-up': typeof AuthSignUpRoute
+  '/all-users': typeof ProtectedAllUsersRoute
+  '/explore': typeof ProtectedExploreRoute
+  '/saved': typeof ProtectedSavedRoute
   '/profile/$id': typeof ProfileIdRoute
+  '/posts/create': typeof ProtectedPostsCreateRoute
+  '/posts': typeof ProtectedPostsIndexRoute
+  '/posts/$id/edit': typeof ProtectedPostsIdEditRoute
+  '/posts/$id': typeof ProtectedPostsIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/demo/tanstack-query': typeof DemoTanstackQueryRoute
+  '/sign-in': typeof AuthSignInRoute
+  '/sign-up': typeof AuthSignUpRoute
+  '/all-users': typeof ProtectedAllUsersRoute
+  '/explore': typeof ProtectedExploreRoute
+  '/saved': typeof ProtectedSavedRoute
   '/profile/$id': typeof ProfileIdRoute
+  '/posts/create': typeof ProtectedPostsCreateRoute
+  '/posts': typeof ProtectedPostsIndexRoute
+  '/posts/$id/edit': typeof ProtectedPostsIdEditRoute
+  '/posts/$id': typeof ProtectedPostsIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/demo/tanstack-query': typeof DemoTanstackQueryRoute
-  '/profile/$id': typeof ProfileIdRoute
+  '/_auth': typeof AuthRouteRouteWithChildren
+  '/_protected': typeof ProtectedRouteRouteWithChildren
+  '/_auth/sign-in': typeof AuthSignInRoute
+  '/_auth/sign-up': typeof AuthSignUpRoute
+  '/_protected/all-users': typeof ProtectedAllUsersRoute
+  '/_protected/explore': typeof ProtectedExploreRoute
+  '/_protected/saved': typeof ProtectedSavedRoute
+  '/profile_/$id': typeof ProfileIdRoute
+  '/_protected/posts/create': typeof ProtectedPostsCreateRoute
+  '/_protected/posts/': typeof ProtectedPostsIndexRoute
+  '/_protected/posts/$id/edit': typeof ProtectedPostsIdEditRoute
+  '/_protected/posts/$id/': typeof ProtectedPostsIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/demo/tanstack-query' | '/profile/$id'
+  fullPaths:
+    | '/'
+    | '/sign-in'
+    | '/sign-up'
+    | '/all-users'
+    | '/explore'
+    | '/saved'
+    | '/profile/$id'
+    | '/posts/create'
+    | '/posts'
+    | '/posts/$id/edit'
+    | '/posts/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/demo/tanstack-query' | '/profile/$id'
-  id: '__root__' | '/' | '/demo/tanstack-query' | '/profile/$id'
+  to:
+    | '/'
+    | '/sign-in'
+    | '/sign-up'
+    | '/all-users'
+    | '/explore'
+    | '/saved'
+    | '/profile/$id'
+    | '/posts/create'
+    | '/posts'
+    | '/posts/$id/edit'
+    | '/posts/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/_auth'
+    | '/_protected'
+    | '/_auth/sign-in'
+    | '/_auth/sign-up'
+    | '/_protected/all-users'
+    | '/_protected/explore'
+    | '/_protected/saved'
+    | '/profile_/$id'
+    | '/_protected/posts/create'
+    | '/_protected/posts/'
+    | '/_protected/posts/$id/edit'
+    | '/_protected/posts/$id/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  DemoTanstackQueryRoute: typeof DemoTanstackQueryRoute
+  AuthRouteRoute: typeof AuthRouteRouteWithChildren
+  ProtectedRouteRoute: typeof ProtectedRouteRouteWithChildren
   ProfileIdRoute: typeof ProfileIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/_protected': {
+      id: '/_protected'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof ProtectedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_auth': {
+      id: '/_auth'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof AuthRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -68,26 +203,121 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/profile/$id': {
-      id: '/profile/$id'
+    '/profile_/$id': {
+      id: '/profile_/$id'
       path: '/profile/$id'
       fullPath: '/profile/$id'
       preLoaderRoute: typeof ProfileIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/demo/tanstack-query': {
-      id: '/demo/tanstack-query'
-      path: '/demo/tanstack-query'
-      fullPath: '/demo/tanstack-query'
-      preLoaderRoute: typeof DemoTanstackQueryRouteImport
-      parentRoute: typeof rootRouteImport
+    '/_protected/saved': {
+      id: '/_protected/saved'
+      path: '/saved'
+      fullPath: '/saved'
+      preLoaderRoute: typeof ProtectedSavedRouteImport
+      parentRoute: typeof ProtectedRouteRoute
+    }
+    '/_protected/explore': {
+      id: '/_protected/explore'
+      path: '/explore'
+      fullPath: '/explore'
+      preLoaderRoute: typeof ProtectedExploreRouteImport
+      parentRoute: typeof ProtectedRouteRoute
+    }
+    '/_protected/all-users': {
+      id: '/_protected/all-users'
+      path: '/all-users'
+      fullPath: '/all-users'
+      preLoaderRoute: typeof ProtectedAllUsersRouteImport
+      parentRoute: typeof ProtectedRouteRoute
+    }
+    '/_auth/sign-up': {
+      id: '/_auth/sign-up'
+      path: '/sign-up'
+      fullPath: '/sign-up'
+      preLoaderRoute: typeof AuthSignUpRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
+    '/_auth/sign-in': {
+      id: '/_auth/sign-in'
+      path: '/sign-in'
+      fullPath: '/sign-in'
+      preLoaderRoute: typeof AuthSignInRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
+    '/_protected/posts/': {
+      id: '/_protected/posts/'
+      path: '/posts'
+      fullPath: '/posts'
+      preLoaderRoute: typeof ProtectedPostsIndexRouteImport
+      parentRoute: typeof ProtectedRouteRoute
+    }
+    '/_protected/posts/create': {
+      id: '/_protected/posts/create'
+      path: '/posts/create'
+      fullPath: '/posts/create'
+      preLoaderRoute: typeof ProtectedPostsCreateRouteImport
+      parentRoute: typeof ProtectedRouteRoute
+    }
+    '/_protected/posts/$id/': {
+      id: '/_protected/posts/$id/'
+      path: '/posts/$id'
+      fullPath: '/posts/$id'
+      preLoaderRoute: typeof ProtectedPostsIdIndexRouteImport
+      parentRoute: typeof ProtectedRouteRoute
+    }
+    '/_protected/posts/$id/edit': {
+      id: '/_protected/posts/$id/edit'
+      path: '/posts/$id/edit'
+      fullPath: '/posts/$id/edit'
+      preLoaderRoute: typeof ProtectedPostsIdEditRouteImport
+      parentRoute: typeof ProtectedRouteRoute
     }
   }
 }
 
+interface AuthRouteRouteChildren {
+  AuthSignInRoute: typeof AuthSignInRoute
+  AuthSignUpRoute: typeof AuthSignUpRoute
+}
+
+const AuthRouteRouteChildren: AuthRouteRouteChildren = {
+  AuthSignInRoute: AuthSignInRoute,
+  AuthSignUpRoute: AuthSignUpRoute,
+}
+
+const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
+  AuthRouteRouteChildren,
+)
+
+interface ProtectedRouteRouteChildren {
+  ProtectedAllUsersRoute: typeof ProtectedAllUsersRoute
+  ProtectedExploreRoute: typeof ProtectedExploreRoute
+  ProtectedSavedRoute: typeof ProtectedSavedRoute
+  ProtectedPostsCreateRoute: typeof ProtectedPostsCreateRoute
+  ProtectedPostsIndexRoute: typeof ProtectedPostsIndexRoute
+  ProtectedPostsIdEditRoute: typeof ProtectedPostsIdEditRoute
+  ProtectedPostsIdIndexRoute: typeof ProtectedPostsIdIndexRoute
+}
+
+const ProtectedRouteRouteChildren: ProtectedRouteRouteChildren = {
+  ProtectedAllUsersRoute: ProtectedAllUsersRoute,
+  ProtectedExploreRoute: ProtectedExploreRoute,
+  ProtectedSavedRoute: ProtectedSavedRoute,
+  ProtectedPostsCreateRoute: ProtectedPostsCreateRoute,
+  ProtectedPostsIndexRoute: ProtectedPostsIndexRoute,
+  ProtectedPostsIdEditRoute: ProtectedPostsIdEditRoute,
+  ProtectedPostsIdIndexRoute: ProtectedPostsIdIndexRoute,
+}
+
+const ProtectedRouteRouteWithChildren = ProtectedRouteRoute._addFileChildren(
+  ProtectedRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  DemoTanstackQueryRoute: DemoTanstackQueryRoute,
+  AuthRouteRoute: AuthRouteRouteWithChildren,
+  ProtectedRouteRoute: ProtectedRouteRouteWithChildren,
   ProfileIdRoute: ProfileIdRoute,
 }
 export const routeTree = rootRouteImport

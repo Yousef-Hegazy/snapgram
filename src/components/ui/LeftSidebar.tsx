@@ -1,10 +1,11 @@
+import { useAuthContext } from '@/context/AuthContext'
+import { sidebarLinks } from '@/lib/constants'
 import { Link } from '@tanstack/react-router'
 import LeftSidebarLink from './LeftSidebarLink'
 import TopbarLogoutBtn from './TopbarLogoutBtn'
-import type { Users } from 'appwrite/types/appwrite'
-import { sidebarLinks } from '@/lib/constants'
 
-const LeftSidebar = ({ user }: { user: Users | null }) => {
+const LeftSidebar = () => {
+  const { user } = useAuthContext()
   return (
     <nav className="leftsidebar">
       <div className="flex flex-col gap-11">
@@ -17,9 +18,13 @@ const LeftSidebar = ({ user }: { user: Users | null }) => {
           />
         </Link>
 
-        <Link to="/profile/$id" params={{ id: user?.$id || "" }} className="flex gap-3 items-center">
+        <Link
+          to="/profile/$id"
+          params={{ id: user.id }}
+          className="flex gap-3 items-center"
+        >
           <img
-            src={user?.imageUrl || '/images/profile-placeholder.svg'}
+            src={user.imageUrl || '/images/profile-placeholder.svg'}
             alt="profile"
             width={56}
             height={56}

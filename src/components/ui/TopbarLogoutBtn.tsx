@@ -12,7 +12,7 @@ const TopbarLogoutBtn = ({
 
   const handleLogout = () => {
     try {
-      logout('')
+      logout()
     } catch (error) {
       console.log(error)
     }

@@ -1,7 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { AppwriteException } from 'appwrite'
-import type { Posts } from 'appwrite/types/appwrite'
 import { toast } from 'sonner'
 
 import { QUERY_KEYS } from './queryKeys'
@@ -16,16 +15,25 @@ import {
   createPost,
   deletePost,
   editPost,
+  getPostForEdit,
   getPosts,
   likePost,
   savePost,
 } from '@/lib/appwrite/postUtils'
 
+import { INITIAL_USER, useAuthContext } from '@/context/AuthContext'
 import type { INewPost } from '@/types'
 
 export const useCreateUserAccount = () => {
+  const navigate = useNavigate()
   return useMutation({
     mutationFn: createUserAccount,
+    onSuccess: () => {
+      navigate({
+        to: '/posts',
+        replace: true,
+      })
+    },
     onError: (error) => {
       toast.error(error.message || 'Failed to create account')
     },
@@ -34,12 +42,27 @@ export const useCreateUserAccount = () => {
 
 export const useSignInAccount = () => {
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
+  const { setUser, setIsAuthenticated } = useAuthContext()
 
   return useMutation({
     mutationFn: signInAccount,
-    onSuccess: () => {
+    onSuccess: (data) => {
+      setUser({
+        id: data.$id,
+        name: data.name,
+        username: data.username || '',
+        email: data.email,
+        imageUrl: data.imageUrl,
+        bio: data.bio || '',
+      })
+
+      setIsAuthenticated(true)
+
+      queryClient.setQueryData([QUERY_KEYS.GET_CURRENT_USER], data)
+
       navigate({
-        to: '/',
+        to: '/posts',
         replace: true,
       })
     },
@@ -59,21 +82,26 @@ export const useGetCurrentUser = () => {
   return useQuery({
     queryKey: [QUERY_KEYS.GET_CURRENT_USER],
     queryFn: getCurrentUser,
-    retry: false,
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 300_000, // 5 minutes
   })
 }
 
 export const useLogout = () => {
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
+  const { setUser, setIsAuthenticated } = useAuthContext()
   return useMutation({
-    mutationFn: async (routeAfterSuccess?: string) => {
+    mutationFn: async () => {
       await logout()
-      return routeAfterSuccess || '/sign-in'
     },
-    onSuccess: (routeAfterSuccess) => {
+    onSuccess: async () => {
+      setUser(INITIAL_USER)
+      setIsAuthenticated(false)
+
+      queryClient.setQueryData([QUERY_KEYS.GET_CURRENT_USER], null)
+
       navigate({
-        to: routeAfterSuccess,
+        to: '/sign-in',
         replace: true,
       })
     },
@@ -153,9 +181,8 @@ export const useDeletePost = () => {
   })
 }
 
-export const useGetPosts = ({ initialData }: { initialData: Array<Posts> }) => {
+export const useGetPosts = () => {
   return useQuery({
-    initialData,
     queryKey: [QUERY_KEYS.GET_POSTS],
     queryFn: getPosts,
     staleTime: 1000 * 60, // 1 minutes
@@ -167,7 +194,8 @@ export const useLikePost = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: likePost,
+    mutationFn: ({ postId, userId }: { postId: string; userId: string }) =>
+      likePost(postId, userId),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.GET_POSTS] })
     },
@@ -181,12 +209,27 @@ export const useSavePost = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: savePost,
+    mutationFn: async ({
+      postId,
+      userId,
+    }: {
+      postId: string
+      userId: string
+    }) => await savePost(postId, userId),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.GET_POSTS] })
     },
     onError: (error) => {
       toast.error(error.message || 'Failed to save post')
     },
+  })
+}
+
+export const useGetPostForEdit = (postId: string) => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.GET_POST_BY_ID, postId],
+    queryFn: () => getPostForEdit(postId),
+    staleTime: 1000 * 60, // 1 minutes
+    refetchOnMount: 'always',
   })
 }

@@ -1,101 +1,108 @@
-import { ID } from "appwrite";
-import { account, appwriteConfig, avatars, database } from "appwrite/config";
-import type { Users } from "appwrite/types/appwrite";
+import { ID } from 'appwrite'
+import { account, appwriteConfig, avatars, database } from '@/appwrite/config'
+import type { Users } from '@/appwrite/types/appwrite'
 
-import type { INewUser } from "@/types";
+import type { INewUser } from '@/types'
 
 export async function createUserAccount(user: INewUser) {
+  const newAccount = await account.create({
+    userId: ID.unique(),
+    email: user.email,
+    password: user.password,
+    name: user.name,
+  })
 
-    const newAccount = await account.create({
-        userId: ID.unique(),
-        email: user.email,
-        password: user.password,
-        name: user.name,
-    });
+  if (!newAccount.$id) throw new Error('Failed to create account')
 
-    if (!newAccount.$id) throw new Error("Failed to create account");
+  const avatarUrl = avatars.getInitials({
+    name: user.name,
+  })
 
-    const avatarUrl = avatars.getInitials({
-        name: user.name
-    });
+  const newUser = await saveUserToDB({
+    id: newAccount.$id,
+    email: newAccount.email,
+    name: newAccount.name,
+    username: user.username,
+    imageUrl: avatarUrl,
+  })
 
-    const newUser = await saveUserToDB({
-        id: newAccount.$id,
-        email: newAccount.email,
-        name: newAccount.name,
-        username: user.username,
-        imageUrl: avatarUrl
-    })
+  if (!newUser.$id) throw new Error('Failed to save user to database')
 
-    return newUser;
-
+  return newUser
 }
 
 export async function saveUserToDB(user: {
-    id: string;
-    email: string;
-    name: string;
-    imageUrl: string;
-    username?: string;
+  id: string
+  email: string
+  name: string
+  imageUrl: string
+  username?: string
 }) {
-    try {
-        const newUser = await database.createRow({
-            databaseId: appwriteConfig.databaseId,
-            tableId: appwriteConfig.usersTableId,
-            rowId: user.id,
-            data: {
-                email: user.email,
-                name: user.name,
-                username: user.username || "",
-                imageUrl: user.imageUrl,
-            },
-        });
+  try {
+    const newUser = await database.createRow({
+      databaseId: appwriteConfig.databaseId,
+      tableId: appwriteConfig.usersTableId,
+      rowId: user.id,
+      data: {
+        email: user.email,
+        name: user.name,
+        username: user.username || '',
+        imageUrl: user.imageUrl,
+      },
+    })
 
-        return newUser;
-
-    } catch (error) {
-        console.log(error);
-        throw error;
-    }
+    return newUser
+  } catch (error) {
+    console.log(error)
+    throw error
+  }
 }
 
-export async function signInAccount(user: { email: string; password: string; }) {
-    const session = await account.createEmailPasswordSession({
-        email: user.email,
-        password: user.password
-    });
-    return session;
+export async function signInAccount(user: { email: string; password: string }) {
+  const session = await account.createEmailPasswordSession({
+    email: user.email,
+    password: user.password,
+  })
+
+  if (session.$id) {
+    const currentUser = await getCurrentUser()
+    return currentUser
+  }
+
+  throw new Error('Failed to sign in')
 }
 
 export async function logout() {
-    // Cookies handled in API
+  await account.deleteSession({
+    sessionId: 'current',
+  })
 }
 
 export async function getUserByAccountId(accountId: string) {
-    try {
-        const currentUser = await database.getRow<Users>({
-            databaseId: appwriteConfig.databaseId,
-            tableId: appwriteConfig.usersTableId,
-            rowId: accountId,
-        });
-        return currentUser;
-    } catch (error) {
-        console.log(error);
-        throw error;
-    }
+  try {
+    const currentUser = await database.getRow<Users>({
+      databaseId: appwriteConfig.databaseId,
+      tableId: appwriteConfig.usersTableId,
+      rowId: accountId,
+    })
+    return currentUser
+  } catch (error) {
+    console.log(error)
+    throw error
+  }
 }
 
 export async function getIsLoggedIn(): Promise<boolean> {
-    try {
-        const ac = await account.get();
-        return !!ac.$id;
-    } catch {
-        return false;
-    }
+  try {
+    const ac = await account.get()
+    return !!ac.$id
+  } catch {
+    return false
+  }
 }
 
 export async function getCurrentUser() {
-    const { $id } = await account.get();
-    const user = await getUserByAccountId($id);
-    return user;
+  const { $id } = await account.get()
+  const user = await getUserByAccountId($id)
+  return user
 }
