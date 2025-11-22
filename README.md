@@ -2,7 +2,7 @@
 
 ![Snapgram Logo](public/images/logo.svg)
 
-Welcome to Snapgram, a modern social media application inspired by Instagram! Snapgram allows users to share photos, follow friends, and discover new content in a sleek, user-friendly interface.
+Welcome to Snapgram, a modern social media application inspired by Instagram! Snapgram allows users to share photos, follow friends, and discover new content in a sleek, user-friendly interface. This project was coded along with this amazing [youtube course](https://youtu.be/_W3R2VwRyF4).
 
 ## Features
 
@@ -11,7 +11,8 @@ Welcome to Snapgram, a modern social media application inspired by Instagram! Sn
 - **User Profiles**: View and edit personal profiles, see followers and following.
 - **Explore Feed**: Discover posts from all users.
 - **Saved Posts**: Save favorite posts for later viewing.
-- **Real-time Interactions**: Like, comment, and share posts.
+<!-- - **Real-time Interactions**: Like, comment, and share posts. -->
+- **Real-time Interactions**: Like, and Save posts.
 - **Responsive Design**: Optimized for desktop and mobile devices.
 
 ## Tech Stack
@@ -107,10 +108,11 @@ Global state is managed with React Context, particularly for authentication in `
 
 Snapgram uses Appwrite for backend services:
 - Database: Store user and post data
-- Authentication: User sign-up/sign-in
+- Authentication: User sign-up/sign-in and `AuthContext`
 - Storage: Upload and serve images
 
 Configure your Appwrite instance in `src/appwrite/config.ts`.
+Backup and upload local appwrite instance's data using `backup-steps.txt`
 
 ## Contributing
 
