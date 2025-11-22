@@ -2,7 +2,7 @@
 
 ![Snapgram Logo](public/images/logo.svg)
 
-Welcome to Snapgram, a modern social media application inspired by Instagram! Snapgram allows users to share photos, follow friends, and discover new content in a sleek, user-friendly interface. This project was coded along with this amazing [youtube course](https://youtu.be/_W3R2VwRyF4).
+Welcome to Snapgram, an Instagram-inspired social media platform built with cutting-edge technologies! Share photos, connect with friends, and explore captivating content through an intuitive, responsive interface. This project was developed alongside the excellent [YouTube course](https://youtu.be/_W3R2VwRyF4), but enhanced with a more modern tech stack for improved performance and developer experience.
 
 ## Features
 
