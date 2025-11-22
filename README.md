@@ -1,6 +1,6 @@
 # Snapgram
 
-![Snapgram Logo](public/icons/home.svg)
+![Snapgram Logo](public/images/logo.svg)
 
 Welcome to Snapgram, a modern social media application inspired by Instagram! Snapgram allows users to share photos, follow friends, and discover new content in a sleek, user-friendly interface.
 
@@ -118,4 +118,4 @@ Feel free to contribute to Snapgram! Follow the standard Git workflow: fork, bra
 
 ## License
 
-This project is open-source. Check the license file for details.
+This project is open-source.
