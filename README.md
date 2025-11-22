@@ -1,15 +1,41 @@
-Welcome to your new TanStack app! 
+# Snapgram
 
-# Getting Started
+![Snapgram Logo](public/icons/home.svg)
 
-To run this application:
+Welcome to Snapgram, a modern social media application inspired by Instagram! Snapgram allows users to share photos, follow friends, and discover new content in a sleek, user-friendly interface.
+
+## Features
+
+- **User Authentication**: Secure sign-up and sign-in using Appwrite.
+- **Post Creation**: Upload and share images with captions.
+- **User Profiles**: View and edit personal profiles, see followers and following.
+- **Explore Feed**: Discover posts from all users.
+- **Saved Posts**: Save favorite posts for later viewing.
+- **Real-time Interactions**: Like, comment, and share posts.
+- **Responsive Design**: Optimized for desktop and mobile devices.
+
+## Tech Stack
+
+- **Frontend**: React, TypeScript, Vite
+- **Routing**: TanStack Router
+- **State Management**: TanStack Query for data fetching
+- **Backend**: Appwrite (database, authentication, storage)
+- **Styling**: Tailwind CSS, Shadcn UI components
+- **Linting & Formatting**: ESLint, Prettier
+- **Testing**: Vitest
+
+## Getting Started
+
+To run this application locally:
 
 ```bash
 npm install
 npm run start
 ```
 
-# Building For Production
+Make sure you have Appwrite set up and configured in `src/appwrite/config.ts`.
+
+## Building For Production
 
 To build this application for production:
 
@@ -27,13 +53,11 @@ npm run test
 
 ## Styling
 
-This project uses [Tailwind CSS](https://tailwindcss.com/) for styling.
-
+This project uses [Tailwind CSS](https://tailwindcss.com/) for styling, with custom components from [Shadcn](https://ui.shadcn.com/).
 
 ## Linting & Formatting
 
-
-This project uses [eslint](https://eslint.org/) and [prettier](https://prettier.io/) for linting and formatting. Eslint is configured using [tanstack/eslint-config](https://tanstack.com/config/latest/docs/eslint). The following scripts are available:
+This project uses [ESLint](https://eslint.org/) and [Prettier](https://prettier.io/) for linting and formatting. ESLint is configured using [TanStack ESLint config](https://tanstack.com/config/latest/docs/eslint). The following scripts are available:
 
 ```bash
 npm run lint
@@ -41,288 +65,57 @@ npm run format
 npm run check
 ```
 
+## Environment Variables
 
-## Shadcn
+Environment variables are managed with T3Env for type safety. Add variables to `src/env.ts` and use them in your code.
 
-Add components using the latest version of [Shadcn](https://ui.shadcn.com/).
-
-```bash
-pnpx shadcn@latest add button
-```
-
-
-## T3Env
-
-- You can use T3Env to add type safety to your environment variables.
-- Add Environment variables to the `src/env.mjs` file.
-- Use the environment variables in your code.
-
-### Usage
+Example:
 
 ```ts
 import { env } from "@/env";
 
-console.log(env.VITE_APP_TITLE);
+console.log(env.VITE_APPWRITE_URL);
 ```
-
-
-
-
-
 
 ## Routing
-This project uses [TanStack Router](https://tanstack.com/router). The initial setup is a file based router. Which means that the routes are managed as files in `src/routes`.
 
-### Adding A Route
+This project uses [TanStack Router](https://tanstack.com/router) with file-based routing. Routes are defined in `src/routes/`.
 
-To add a new route to your application just add another a new file in the `./src/routes` directory.
+### Adding a Route
 
-TanStack will automatically generate the content of the route file for you.
+Add a new file in `./src/routes` to create a new route. TanStack Router will auto-generate the route content.
 
-Now that you have two routes you can use a `Link` component to navigate between them.
+### Navigation
 
-### Adding Links
-
-To use SPA (Single Page Application) navigation you will need to import the `Link` component from `@tanstack/react-router`.
+Use the `Link` component from `@tanstack/react-router` for SPA navigation:
 
 ```tsx
 import { Link } from "@tanstack/react-router";
+
+<Link to="/profile">Profile</Link>
 ```
-
-Then anywhere in your JSX you can use it like so:
-
-```tsx
-<Link to="/about">About</Link>
-```
-
-This will create a link that will navigate to the `/about` route.
-
-More information on the `Link` component can be found in the [Link documentation](https://tanstack.com/router/v1/docs/framework/react/api/router/linkComponent).
-
-### Using A Layout
-
-In the File Based Routing setup the layout is located in `src/routes/__root.tsx`. Anything you add to the root route will appear in all the routes. The route content will appear in the JSX where you use the `<Outlet />` component.
-
-Here is an example layout that includes a header:
-
-```tsx
-import { Outlet, createRootRoute } from '@tanstack/react-router'
-import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
-
-import { Link } from "@tanstack/react-router";
-
-export const Route = createRootRoute({
-  component: () => (
-    <>
-      <header>
-        <nav>
-          <Link to="/">Home</Link>
-          <Link to="/about">About</Link>
-        </nav>
-      </header>
-      <Outlet />
-      <TanStackRouterDevtools />
-    </>
-  ),
-})
-```
-
-The `<TanStackRouterDevtools />` component is not required so you can remove it if you don't want it in your layout.
-
-More information on layouts can be found in the [Layouts documentation](https://tanstack.com/router/latest/docs/framework/react/guide/routing-concepts#layouts).
-
 
 ## Data Fetching
 
-There are multiple ways to fetch data in your application. You can use TanStack Query to fetch data from a server. But you can also use the `loader` functionality built into TanStack Router to load the data for a route before it's rendered.
-
-For example:
-
-```tsx
-const peopleRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/people",
-  loader: async () => {
-    const response = await fetch("https://swapi.dev/api/people");
-    return response.json() as Promise<{
-      results: {
-        name: string;
-      }[];
-    }>;
-  },
-  component: () => {
-    const data = peopleRoute.useLoaderData();
-    return (
-      <ul>
-        {data.results.map((person) => (
-          <li key={person.name}>{person.name}</li>
-        ))}
-      </ul>
-    );
-  },
-});
-```
-
-Loaders simplify your data fetching logic dramatically. Check out more information in the [Loader documentation](https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#loader-parameters).
-
-### React-Query
-
-React-Query is an excellent addition or alternative to route loading and integrating it into you application is a breeze.
-
-First add your dependencies:
-
-```bash
-npm install @tanstack/react-query @tanstack/react-query-devtools
-```
-
-Next we'll need to create a query client and provider. We recommend putting those in `main.tsx`.
-
-```tsx
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-
-// ...
-
-const queryClient = new QueryClient({});
-
-// ...
-
-if (!rootElement.innerHTML) {
-  const root = ReactDOM.createRoot(rootElement);
-
-  root.render(
-    <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
-    </QueryClientProvider>
-  );
-}
-```
-
-You can also add TanStack Query Devtools to the root route (optional).
-
-```tsx
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-
-const rootRoute = createRootRoute({
-  component: () => (
-    <>
-      <Outlet />
-      <ReactQueryDevtools buttonPosition="top-right" />
-      <TanStackRouterDevtools />
-    </>
-  ),
-});
-```
-
-Now you can use `useQuery` to fetch your data.
-
-```tsx
-import { useQuery } from "@tanstack/react-query";
-
-import "./App.css";
-
-function App() {
-  const { data } = useQuery({
-    queryKey: ["people"],
-    queryFn: () =>
-      fetch("https://swapi.dev/api/people")
-        .then((res) => res.json())
-        .then((data) => data.results as { name: string }[]),
-    initialData: [],
-  });
-
-  return (
-    <div>
-      <ul>
-        {data.map((person) => (
-          <li key={person.name}>{person.name}</li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-
-export default App;
-```
-
-You can find out everything you need to know on how to use React-Query in the [React-Query documentation](https://tanstack.com/query/latest/docs/framework/react/overview).
+Data is fetched using TanStack Query, integrated with Appwrite services. Queries and mutations are defined in `src/lib/react-query/`.
 
 ## State Management
 
-Another common requirement for React applications is state management. There are many options for state management in React. TanStack Store provides a great starting point for your project.
+Global state is managed with React Context, particularly for authentication in `src/context/AuthContext.tsx`.
 
-First you need to add TanStack Store as a dependency:
+## Appwrite Integration
 
-```bash
-npm install @tanstack/store
-```
+Snapgram uses Appwrite for backend services:
+- Database: Store user and post data
+- Authentication: User sign-up/sign-in
+- Storage: Upload and serve images
 
-Now let's create a simple counter in the `src/App.tsx` file as a demonstration.
+Configure your Appwrite instance in `src/appwrite/config.ts`.
 
-```tsx
-import { useStore } from "@tanstack/react-store";
-import { Store } from "@tanstack/store";
-import "./App.css";
+## Contributing
 
-const countStore = new Store(0);
+Feel free to contribute to Snapgram! Follow the standard Git workflow: fork, branch, commit, pull request.
 
-function App() {
-  const count = useStore(countStore);
-  return (
-    <div>
-      <button onClick={() => countStore.setState((n) => n + 1)}>
-        Increment - {count}
-      </button>
-    </div>
-  );
-}
+## License
 
-export default App;
-```
-
-One of the many nice features of TanStack Store is the ability to derive state from other state. That derived state will update when the base state updates.
-
-Let's check this out by doubling the count using derived state.
-
-```tsx
-import { useStore } from "@tanstack/react-store";
-import { Store, Derived } from "@tanstack/store";
-import "./App.css";
-
-const countStore = new Store(0);
-
-const doubledStore = new Derived({
-  fn: () => countStore.state * 2,
-  deps: [countStore],
-});
-doubledStore.mount();
-
-function App() {
-  const count = useStore(countStore);
-  const doubledCount = useStore(doubledStore);
-
-  return (
-    <div>
-      <button onClick={() => countStore.setState((n) => n + 1)}>
-        Increment - {count}
-      </button>
-      <div>Doubled - {doubledCount}</div>
-    </div>
-  );
-}
-
-export default App;
-```
-
-We use the `Derived` class to create a new store that is derived from another store. The `Derived` class has a `mount` method that will start the derived store updating.
-
-Once we've created the derived store we can use it in the `App` component just like we would any other store using the `useStore` hook.
-
-You can find out everything you need to know on how to use TanStack Store in the [TanStack Store documentation](https://tanstack.com/store/latest).
-
-# Demo files
-
-Files prefixed with `demo` can be safely deleted. They are there to provide a starting point for you to play around with the features you've installed.
-
-# Learn More
-
-You can learn more about all of the offerings from TanStack in the [TanStack documentation](https://tanstack.com).
+This project is open-source. Check the license file for details.
