@@ -279,11 +279,11 @@
 }
 
 @utility grid-post_link {
-  @apply flex rounded-[24px] border border-dark-4 overflow-hidden cursor-pointer w-full h-full;
+  @apply flex rounded-3xl border border-dark-4 overflow-hidden cursor-pointer w-full h-full;
 }
 
 @utility grid-post_user {
-  @apply absolute bottom-0 p-5 flex-between w-full bg-linear-to-t from-dark-3 to-transparent rounded-b-[24px] gap-2;
+  @apply absolute bottom-0 p-5 flex-between w-full bg-linear-to-t from-dark-3 to-transparent rounded-b-3xl gap-2;
 }
 
 @utility leftsidebar {

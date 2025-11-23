@@ -18,7 +18,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
     <>
       <Outlet />
       <Toaster />
-      <TanStackDevtools
+      {/* <TanStackDevtools
         config={{
           position: 'bottom-right',
         }}
@@ -29,7 +29,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
           },
           TanStackQueryDevtools,
         ]}
-      />
+      /> */}
     </>
   ),
 })

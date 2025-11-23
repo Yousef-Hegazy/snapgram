@@ -1,4 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { AppwriteException } from 'appwrite'
 import { toast } from 'sonner'
@@ -15,10 +20,13 @@ import {
   createPost,
   deletePost,
   editPost,
+  getInfinitePosts,
+  getPostDetails,
   getPostForEdit,
   getPosts,
   likePost,
   savePost,
+  searchPosts,
 } from '@/lib/appwrite/postUtils'
 
 import { INITIAL_USER, useAuthContext } from '@/context/AuthContext'
@@ -166,11 +174,11 @@ export const useDeletePost = () => {
   return useMutation({
     mutationFn: async ({
       postId,
-      imageId,
+      userId,
     }: {
       postId: string
-      imageId: string
-    }) => deletePost(postId, imageId),
+      userId: string
+    }) => await deletePost(postId, userId),
     onSuccess: async () => {
       toast.success('Post deleted successfully')
       await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.GET_POSTS] })
@@ -231,5 +239,40 @@ export const useGetPostForEdit = (postId: string) => {
     queryFn: () => getPostForEdit(postId),
     staleTime: 1000 * 60, // 1 minutes
     refetchOnMount: 'always',
+  })
+}
+
+export const useGetPostDetails = (postId: string) => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.GET_POSTS, postId],
+    queryFn: () => getPostDetails(postId),
+    staleTime: 1000 * 60, // 1 minutes
+    refetchOnMount: 'always',
+  })
+}
+
+export const useGetInfinitePosts = () => {
+  return useInfiniteQuery({
+    queryKey: [QUERY_KEYS.GET_POSTS, QUERY_KEYS.GET_INFINITE_POSTS],
+    queryFn: ({ pageParam }) => getInfinitePosts({ page: pageParam }),
+    getNextPageParam: (lastPage, allPages, lastPageParam) => {
+      if (lastPage && lastPage.rows.length === 0) return null
+      // const nextPage = Number(lastPageParam) + 1
+      // if (nextPage > allPages.length) return null
+      // return nextPage.toString()
+      const lastId = lastPage.rows[lastPage.rows.length - 1]?.$id
+
+      return lastId
+    },
+    initialPageParam: '0',
+  })
+}
+
+export const useSearchPosts = (query: string) => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.SEARCH_POSTS, query],
+    queryFn: () => searchPosts(query),
+    staleTime: 1000 * 60, // 1 minutes
+    enabled: !!query,
   })
 }

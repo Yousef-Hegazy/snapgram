@@ -1,4 +1,4 @@
-import { account, appwriteConfig, database, storage } from '@/appwrite/config'
+import { appwriteConfig, database, storage } from '@/appwrite/config'
 import type { Likes, Posts, Saves } from '@/appwrite/types/appwrite'
 import { ID, ImageGravity, Query } from 'appwrite'
 
@@ -37,20 +37,33 @@ export async function getPostForEdit(postId: string) {
   return post
 }
 
-export async function getPostById(postId: string) {
-  try {
-    const post = await database.getRow<Posts>({
-      databaseId: appwriteConfig.databaseId,
-      tableId: appwriteConfig.postsTableId,
-      rowId: postId,
-      queries: [Query.select(['*'])],
-    })
+export async function getPostDetails(postId: string) {
+  const post = await database.getRow<Posts>({
+    databaseId: appwriteConfig.databaseId,
+    tableId: appwriteConfig.postsTableId,
+    rowId: postId,
+    queries: [Query.select(['*', 'creator.*', 'likes.user', 'save.user'])],
+  })
 
-    return post
-  } catch {
-    return null
-  }
+  if (!post.$id) throw new Error('Post not found')
+
+  return post
 }
+
+// export async function getPostById(postId: string) {
+//   try {
+//     const post = await database.getRow<Posts>({
+//       databaseId: appwriteConfig.databaseId,
+//       tableId: appwriteConfig.postsTableId,
+//       rowId: postId,
+//       queries: [Query.select(['*'])],
+//     })
+
+//     return post
+//   } catch {
+//     return null
+//   }
+// }
 
 export async function createPost({
   file,
@@ -95,6 +108,7 @@ export async function createPost({
       imageId,
       imageUrl,
       creator: userId,
+      likesCount: 1,
     },
   })
 
@@ -104,6 +118,26 @@ export async function createPost({
     }
 
     throw new Error('Post creation failed')
+  }
+
+  const like = await database.createRow<Likes>({
+    databaseId: appwriteConfig.databaseId,
+    tableId: appwriteConfig.likesTableId,
+    rowId: ID.unique(),
+    data: {
+      post: post.$id as any,
+      user: userId as any,
+    },
+  })
+
+  if (!like?.$id) {
+    await database.decrementRowColumn<Posts>({
+      databaseId: appwriteConfig.databaseId,
+      tableId: appwriteConfig.postsTableId,
+      rowId: post.$id,
+      column: 'likesCount',
+      value: 1,
+    })
   }
 
   return post
@@ -128,12 +162,12 @@ export async function editPost({
     databaseId: appwriteConfig.databaseId,
     tableId: appwriteConfig.postsTableId,
     rowId: id,
-    queries: [Query.select(['creator', 'imageId', 'imageUrl'])],
+    queries: [Query.select(['creator.$id', 'imageId', 'imageUrl'])],
   })
 
   if (!existingPost.$id) throw new Error('Post not found')
 
-  if (existingPost.creator.toString() !== userId)
+  if (existingPost.creator.$id.toString() !== userId)
     throw new Error('You are not authorized to edit this post')
 
   let imageId = existingPost.imageId
@@ -183,14 +217,26 @@ export async function editPost({
   return post
 }
 
-export async function deletePost(postId: string, imageId: string) {
+export async function deletePost(postId: string, userId: string) {
+  const existingPost = await database.getRow<Posts>({
+    databaseId: appwriteConfig.databaseId,
+    tableId: appwriteConfig.postsTableId,
+    rowId: postId,
+    queries: [Query.select(['creator.$id', 'imageId'])],
+  })
+
+  if (!existingPost.$id) throw new Error('Post not found')
+
+  if (existingPost.creator.$id.toString() !== userId)
+    throw new Error('You are not authorized to delete this post')
+
   await database.deleteRow({
     databaseId: appwriteConfig.databaseId,
     tableId: appwriteConfig.postsTableId,
     rowId: postId,
   })
 
-  await deleteFile(imageId)
+  await deleteFile(existingPost.imageId)
 
   return null
 }
@@ -358,5 +404,52 @@ export async function savePost(postId: string, userId: string) {
     return await deleteSaveById(existingSave.$id, postId)
   } else {
     return await createSave(postId, userId)
+  }
+}
+
+export async function getInfinitePosts({ page }: { page?: string }) {
+  const queries = [
+    Query.orderDesc('$updatedAt'),
+    Query.limit(20),
+    Query.select(['*', 'creator.*', 'likes.user', 'save.user']),
+  ]
+
+  if (page && page !== '0') {
+    queries.push(Query.cursorAfter(page))
+  }
+
+  try {
+    const posts = await database.listRows<Posts>({
+      databaseId: appwriteConfig.databaseId,
+      tableId: appwriteConfig.postsTableId,
+      queries,
+    })
+
+    if (!posts.rows) {
+      throw new Error('Failed to fetch posts')
+    }
+
+    return posts
+  } catch (error) {
+    console.log(error)
+    throw error
+  }
+}
+
+export async function searchPosts(queryString: string) {
+  try {
+    const posts = await database.listRows<Posts>({
+      databaseId: appwriteConfig.databaseId,
+      tableId: appwriteConfig.postsTableId,
+      queries: [
+        Query.search('caption', queryString),
+        Query.orderDesc('$updatedAt'),
+        Query.select(['*', 'creator.*', 'likes.user', 'save.user']),
+      ],
+    })
+    return posts.rows
+  } catch (error) {
+    console.log(error)
+    return []
   }
 }
