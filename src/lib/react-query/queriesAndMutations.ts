@@ -255,7 +255,7 @@ export const useGetInfinitePosts = () => {
   return useInfiniteQuery({
     queryKey: [QUERY_KEYS.GET_POSTS, QUERY_KEYS.GET_INFINITE_POSTS],
     queryFn: ({ pageParam }) => getInfinitePosts({ page: pageParam }),
-    getNextPageParam: (lastPage, allPages, lastPageParam) => {
+    getNextPageParam: (lastPage) => {
       if (lastPage && lastPage.rows.length === 0) return null
       // const nextPage = Number(lastPageParam) + 1
       // if (nextPage > allPages.length) return null
