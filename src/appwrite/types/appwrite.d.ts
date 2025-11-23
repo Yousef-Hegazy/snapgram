@@ -26,6 +26,13 @@ export type Users = Models.Row & {
     imageUrl: string;
     save: Saves[];
     liked: Likes[];
+    followers: Follows[];
+    followees: Follows[];
+    followersCount: number;
+    followeesCount: number;
+    likeCount: number;
+    saveCount: number;
+    postCount: number;
 }
 
 export type Saves = Models.Row & {
@@ -36,4 +43,9 @@ export type Saves = Models.Row & {
 export type Likes = Models.Row & {
     post: Posts;
     user: Users;
+}
+
+export type Follows = Models.Row & {
+    follower: Users;
+    followee: Users;
 }

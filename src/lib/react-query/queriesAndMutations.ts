@@ -31,6 +31,7 @@ import {
 
 import { INITIAL_USER, useAuthContext } from '@/context/AuthContext'
 import type { INewPost } from '@/types'
+import { getUsers } from '../appwrite/usersUtils'
 
 export const useCreateUserAccount = () => {
   const navigate = useNavigate()
@@ -274,5 +275,14 @@ export const useSearchPosts = (query: string) => {
     queryFn: () => searchPosts(query),
     staleTime: 1000 * 60, // 1 minutes
     enabled: !!query,
+  })
+}
+
+export const useGetUsers = (limit?: number) => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.GET_USERS],
+    queryFn: () => getUsers(limit),
+    staleTime: 1000 * 60, // 1 minutes
+    refetchOnMount: 'always',
   })
 }

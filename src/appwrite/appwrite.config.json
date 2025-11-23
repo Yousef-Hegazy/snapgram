@@ -272,6 +272,75 @@
                     "twoWayKey": "user",
                     "onDelete": "cascade",
                     "side": "child"
+                },
+                {
+                    "key": "followers",
+                    "type": "relationship",
+                    "required": false,
+                    "array": false,
+                    "relatedTable": "follows",
+                    "relationType": "manyToOne",
+                    "twoWay": true,
+                    "twoWayKey": "follower",
+                    "onDelete": "cascade",
+                    "side": "child"
+                },
+                {
+                    "key": "followees",
+                    "type": "relationship",
+                    "required": false,
+                    "array": false,
+                    "relatedTable": "follows",
+                    "relationType": "manyToOne",
+                    "twoWay": true,
+                    "twoWayKey": "followee",
+                    "onDelete": "cascade",
+                    "side": "child"
+                },
+                {
+                    "key": "followersCount",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": 0,
+                    "max": 9223372036854775807,
+                    "default": 0
+                },
+                {
+                    "key": "followeesCount",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": 0,
+                    "max": 9223372036854775807,
+                    "default": 0
+                },
+                {
+                    "key": "likeCount",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": 0,
+                    "max": 9223372036854775807,
+                    "default": 0
+                },
+                {
+                    "key": "saveCount",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": 0,
+                    "max": 9223372036854775807,
+                    "default": 0
+                },
+                {
+                    "key": "postCount",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": 0,
+                    "max": 9223372036854775807,
+                    "default": 0
                 }
             ],
             "indexes": []
@@ -350,6 +419,46 @@
                     "relationType": "manyToOne",
                     "twoWay": true,
                     "twoWayKey": "liked",
+                    "onDelete": "cascade",
+                    "side": "parent"
+                }
+            ],
+            "indexes": []
+        },
+        {
+            "$id": "follows",
+            "$permissions": [
+                "create(\"users\")",
+                "read(\"users\")",
+                "update(\"users\")",
+                "delete(\"users\")"
+            ],
+            "databaseId": "6919b369000578773dc6",
+            "name": "Follows",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "follower",
+                    "type": "relationship",
+                    "required": false,
+                    "array": false,
+                    "relatedTable": "users",
+                    "relationType": "manyToOne",
+                    "twoWay": true,
+                    "twoWayKey": "followers",
+                    "onDelete": "cascade",
+                    "side": "parent"
+                },
+                {
+                    "key": "followee",
+                    "type": "relationship",
+                    "required": false,
+                    "array": false,
+                    "relatedTable": "users",
+                    "relationType": "manyToOne",
+                    "twoWay": true,
+                    "twoWayKey": "followees",
                     "onDelete": "cascade",
                     "side": "parent"
                 }
