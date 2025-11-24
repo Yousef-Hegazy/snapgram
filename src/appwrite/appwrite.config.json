@@ -274,30 +274,6 @@
                     "side": "child"
                 },
                 {
-                    "key": "followers",
-                    "type": "relationship",
-                    "required": false,
-                    "array": false,
-                    "relatedTable": "follows",
-                    "relationType": "manyToOne",
-                    "twoWay": true,
-                    "twoWayKey": "follower",
-                    "onDelete": "cascade",
-                    "side": "child"
-                },
-                {
-                    "key": "followees",
-                    "type": "relationship",
-                    "required": false,
-                    "array": false,
-                    "relatedTable": "follows",
-                    "relationType": "manyToOne",
-                    "twoWay": true,
-                    "twoWayKey": "followee",
-                    "onDelete": "cascade",
-                    "side": "child"
-                },
-                {
                     "key": "followersCount",
                     "type": "integer",
                     "required": false,
@@ -341,6 +317,30 @@
                     "min": 0,
                     "max": 9223372036854775807,
                     "default": 0
+                },
+                {
+                    "key": "followees",
+                    "type": "relationship",
+                    "required": false,
+                    "array": false,
+                    "relatedTable": "follows",
+                    "relationType": "manyToOne",
+                    "twoWay": true,
+                    "twoWayKey": "follower",
+                    "onDelete": "cascade",
+                    "side": "child"
+                },
+                {
+                    "key": "followers",
+                    "type": "relationship",
+                    "required": false,
+                    "array": false,
+                    "relatedTable": "follows",
+                    "relationType": "manyToOne",
+                    "twoWay": true,
+                    "twoWayKey": "followee",
+                    "onDelete": "cascade",
+                    "side": "child"
                 }
             ],
             "indexes": []
@@ -446,7 +446,7 @@
                     "relatedTable": "users",
                     "relationType": "manyToOne",
                     "twoWay": true,
-                    "twoWayKey": "followers",
+                    "twoWayKey": "followees",
                     "onDelete": "cascade",
                     "side": "parent"
                 },
@@ -458,7 +458,7 @@
                     "relatedTable": "users",
                     "relationType": "manyToOne",
                     "twoWay": true,
-                    "twoWayKey": "followees",
+                    "twoWayKey": "followers",
                     "onDelete": "cascade",
                     "side": "parent"
                 }

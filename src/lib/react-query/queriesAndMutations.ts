@@ -31,7 +31,11 @@ import {
 
 import { INITIAL_USER, useAuthContext } from '@/context/AuthContext'
 import type { INewPost } from '@/types'
-import { getPagedUsers, getUsers } from '../appwrite/usersUtils'
+import {
+  getInfiniteUsers,
+  getUsers,
+  toggleFollow,
+} from '../appwrite/usersUtils'
 
 export const useCreateUserAccount = () => {
   const navigate = useNavigate()
@@ -290,12 +294,32 @@ export const useGetUsers = (limit?: number) => {
 export const useInfiniteUsers = (limit?: number) => {
   return useInfiniteQuery({
     queryKey: [QUERY_KEYS.GET_USERS, 'infinite'],
-    queryFn: ({ pageParam }) => getPagedUsers(pageParam, limit),
+    queryFn: ({ pageParam }) => getInfiniteUsers(pageParam, limit),
     getNextPageParam: (lastPage) => {
       if (lastPage.rows.length === 0) return null
       const lastId = lastPage.rows[lastPage.rows.length - 1]?.$id
       return lastId
     },
     initialPageParam: '0',
+  })
+}
+
+export const useToggleFollowUser = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({
+      userId,
+      followerId,
+    }: {
+      userId: string
+      followerId: string
+    }) => toggleFollow(userId, followerId),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.GET_USERS] })
+    },
+    onError: (error) => {
+      toast.error(error.message || 'Failed to toggle follow user')
+    },
   })
 }

@@ -1,4 +1,4 @@
-import { ID } from 'appwrite'
+import { ID, Query } from 'appwrite'
 import { account, appwriteConfig, avatars, database } from '@/appwrite/config'
 import type { Users } from '@/appwrite/types/appwrite'
 
@@ -84,6 +84,7 @@ export async function getUserByAccountId(accountId: string) {
       databaseId: appwriteConfig.databaseId,
       tableId: appwriteConfig.usersTableId,
       rowId: accountId,
+      queries: [Query.select(['*', 'followers.$id', 'followees.$id'])],
     })
     return currentUser
   } catch (error) {

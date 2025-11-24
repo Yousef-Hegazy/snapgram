@@ -10,6 +10,7 @@ export const appwriteConfig = {
     usersTableId: env.VITE_APPWRITE_USERS_TABLE_ID,
     savesTableId: env.VITE_APPWRITE_SAVES_TABLE_ID,
     likesTableId: env.VITE_APPWRITE_LIKES_TABLE_ID,
+    followsTableId: env.VITE_APPWRITE_FOLLOWS_TABLE_ID,
 }
 
 

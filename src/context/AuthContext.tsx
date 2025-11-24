@@ -20,6 +20,10 @@ export const INITIAL_USER = {
   email: '',
   imageUrl: '',
   bio: '',
+  // followers: [],
+  // followees: [],
+  // followersCount: 0,
+  // followeesCount: 0,
 }
 
 const INITIAL_STATE = {

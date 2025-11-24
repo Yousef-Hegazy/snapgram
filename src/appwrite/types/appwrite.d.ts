@@ -26,13 +26,13 @@ export type Users = Models.Row & {
     imageUrl: string;
     save: Saves[];
     liked: Likes[];
-    followers: Follows[];
-    followees: Follows[];
     followersCount: number;
     followeesCount: number;
     likeCount: number;
     saveCount: number;
     postCount: number;
+    followees: Follows[];
+    followers: Follows[];
 }
 
 export type Saves = Models.Row & {

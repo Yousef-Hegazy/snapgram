@@ -22,6 +22,7 @@ export const env = createEnv({
     VITE_APPWRITE_USERS_TABLE_ID: z.string().min(1),
     VITE_APPWRITE_SAVES_TABLE_ID: z.string().min(1),
     VITE_APPWRITE_LIKES_TABLE_ID: z.string().min(1),
+    VITE_APPWRITE_FOLLOWS_TABLE_ID: z.string().min(1),
   },
 
   /**

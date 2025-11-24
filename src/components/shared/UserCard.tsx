@@ -1,16 +1,32 @@
 import type { Users } from '@/appwrite/types/appwrite'
 import { Link } from '@tanstack/react-router'
 import { Button } from '../ui/button'
+import { useToggleFollowUser } from '@/lib/react-query/queriesAndMutations'
+import Loader from '../ui/Loader'
 import { cn } from '@/lib/utils'
 
 type Props = {
   user: Users
-  currentUserId?: string
+  currentUserId: string
 }
 
 const UserCard = ({ user, currentUserId }: Props) => {
-  const isCurrentUser = user.$id === currentUserId;
   
+  const isCurrentUser = user.$id === currentUserId
+  const isFollowing =
+    !isCurrentUser &&
+    user.followersCount &&
+    (user.followers || [])?.find((follower) => follower.follower?.toString() === currentUserId)
+
+  const { mutate: toggleFollow, isPending: isTogglingFollow } =
+    useToggleFollowUser()
+
+  const handleFollow = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation()
+    e.preventDefault()
+    toggleFollow({ userId: user.$id, followerId: currentUserId })
+  }
+
   return (
     <Link to="/profile/$id" params={{ id: user.$id }} className="user-card">
       <img
@@ -29,23 +45,23 @@ const UserCard = ({ user, currentUserId }: Props) => {
         </p>
       </div>
 
-      <Button
-        onClick={
-          !isCurrentUser
-            ? (e) => {
-                e.stopPropagation()
-                e.preventDefault()
-              }
-            : undefined
-        }
-        type="button"
-        size="sm"
-        className={cn('shad-button_primary px-5', {
-          'opacity-0 pointer-events-none': isCurrentUser,
-        })}
-      >
-        Follow
-      </Button>
+      {isCurrentUser ? (
+        <Button type="button" size="sm" className="shad-button_dark_4 px-5 pointer-events-none">
+          You
+        </Button>
+      ) : (
+        <Button
+          onClick={handleFollow}
+          type="button"
+          size="sm"
+          className={cn("px-5", {
+            "shad-button_primary": !isFollowing,
+            "shad-button_dark_4": isFollowing,
+          })}
+        >
+          {isTogglingFollow ? <Loader /> : isFollowing ? 'Unfollow' : 'Follow'}
+        </Button>
+      )}
     </Link>
   )
 }
