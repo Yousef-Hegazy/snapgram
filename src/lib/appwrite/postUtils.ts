@@ -1,5 +1,5 @@
 import { appwriteConfig, database, storage } from '@/appwrite/config'
-import type { Likes, Posts, Saves } from '@/appwrite/types/appwrite'
+import type { Likes, Posts, Saves, Users } from '@/appwrite/types/appwrite'
 import { ID, ImageGravity, Query } from 'appwrite'
 
 import { deleteFile, uploadFile } from './storageUtils'
@@ -120,6 +120,14 @@ export async function createPost({
     throw new Error('Post creation failed')
   }
 
+  await database.incrementRowColumn<Users>({
+    databaseId: appwriteConfig.databaseId,
+    tableId: appwriteConfig.usersTableId,
+    rowId: userId,
+    column: 'postCount',
+    value: 1,
+  })
+
   const like = await database.createRow<Likes>({
     databaseId: appwriteConfig.databaseId,
     tableId: appwriteConfig.likesTableId,
@@ -130,12 +138,28 @@ export async function createPost({
     },
   })
 
+  await database.incrementRowColumn<Users>({
+    databaseId: appwriteConfig.databaseId,
+    tableId: appwriteConfig.usersTableId,
+    rowId: userId,
+    column: 'likeCount',
+    value: 1,
+  })
+
   if (!like?.$id) {
     await database.decrementRowColumn<Posts>({
       databaseId: appwriteConfig.databaseId,
       tableId: appwriteConfig.postsTableId,
       rowId: post.$id,
       column: 'likesCount',
+      value: 1,
+    })
+
+    await database.decrementRowColumn<Users>({
+      databaseId: appwriteConfig.databaseId,
+      tableId: appwriteConfig.usersTableId,
+      rowId: userId,
+      column: 'likeCount',
       value: 1,
     })
   }
@@ -230,6 +254,8 @@ export async function deletePost(postId: string, userId: string) {
   if (existingPost.creator.$id.toString() !== userId)
     throw new Error('You are not authorized to delete this post')
 
+  const userLike = await getLikeByPostAndUser(postId, userId)
+
   await database.deleteRow({
     databaseId: appwriteConfig.databaseId,
     tableId: appwriteConfig.postsTableId,
@@ -238,10 +264,32 @@ export async function deletePost(postId: string, userId: string) {
 
   await deleteFile(existingPost.imageId)
 
+  await database.decrementRowColumn<Users>({
+    databaseId: appwriteConfig.databaseId,
+    tableId: appwriteConfig.usersTableId,
+    rowId: userId,
+    column: 'postCount',
+    value: 1,
+  })
+
+  if (userLike.$id) {
+    await database.decrementRowColumn<Users>({
+      databaseId: appwriteConfig.databaseId,
+      tableId: appwriteConfig.usersTableId,
+      rowId: userId,
+      column: 'likeCount',
+      value: 1,
+    })
+  }
+
   return null
 }
 
-export async function removeLikeById(likeId: string, postId: string) {
+export async function removeLikeById(
+  likeId: string,
+  postId: string,
+  userId: string,
+) {
   await database.deleteRow({
     databaseId: appwriteConfig.databaseId,
     tableId: appwriteConfig.likesTableId,
@@ -255,6 +303,16 @@ export async function removeLikeById(likeId: string, postId: string) {
     column: 'likesCount',
     value: 1,
   })
+
+  await database.decrementRowColumn<Users>({
+    databaseId: appwriteConfig.databaseId,
+    tableId: appwriteConfig.usersTableId,
+    rowId: userId,
+    column: 'likeCount',
+    value: 1,
+  })
+
+  return null
 }
 
 export async function getLikeByPostAndUser(postId: string, userId: string) {
@@ -295,6 +353,26 @@ export async function addLike(postId: string, userId: string) {
     throw new Error('Failed to like the post')
   }
 
+  if (!createdLike.$id) {
+    throw new Error('Failed to like the post')
+  }
+
+  await database.incrementRowColumn<Posts>({
+    databaseId: appwriteConfig.databaseId,
+    tableId: appwriteConfig.postsTableId,
+    rowId: postId,
+    column: 'likesCount',
+    value: 1,
+  })
+
+  await database.incrementRowColumn<Users>({
+    databaseId: appwriteConfig.databaseId,
+    tableId: appwriteConfig.usersTableId,
+    rowId: userId,
+    column: 'likeCount',
+    value: 1,
+  })
+
   return createdLike
 }
 
@@ -313,23 +391,9 @@ export async function likePost(postId: string, userId: string) {
   )
 
   if (existingLike) {
-    await removeLikeById(existingLike.$id, postId)
-    return null
+    return await removeLikeById(existingLike.$id, postId, userId)
   } else {
-    const createdLike = await addLike(postId, userId)
-
-    if (!createdLike.$id) {
-      throw new Error('Failed to like the post')
-    }
-
-    await database.incrementRowColumn<Posts>({
-      databaseId: appwriteConfig.databaseId,
-      tableId: appwriteConfig.postsTableId,
-      rowId: postId,
-      column: 'likesCount',
-      value: 1,
-    })
-    return createdLike
+    return await addLike(postId, userId)
   }
 }
 
@@ -376,10 +440,19 @@ export async function createSave(postId: string, userId: string) {
     value: 1,
   })
 
+  // Update user saves after create
+  await database.incrementRowColumn<Users>({
+    databaseId: appwriteConfig.databaseId,
+    tableId: appwriteConfig.usersTableId,
+    rowId: userId,
+    column: 'saveCount',
+    value: 1,
+  })
+
   return createdSave
 }
 
-export async function deleteSaveById(saveId: string, postId: string) {
+export async function deleteSaveById(saveId: string, postId: string, userId: string) {
   await database.deleteRow({
     databaseId: appwriteConfig.databaseId,
     tableId: appwriteConfig.savesTableId,
@@ -394,6 +467,14 @@ export async function deleteSaveById(saveId: string, postId: string) {
     value: 1,
   })
 
+  await database.decrementRowColumn<Users>({
+    databaseId: appwriteConfig.databaseId,
+    tableId: appwriteConfig.usersTableId,
+    rowId: userId,
+    column: 'saveCount',
+    value: 1,
+  })
+
   return null
 }
 
@@ -401,7 +482,7 @@ export async function savePost(postId: string, userId: string) {
   const existingSave = await getSaveByPostAndUser(postId, userId)
 
   if (existingSave?.$id) {
-    return await deleteSaveById(existingSave.$id, postId)
+    return await deleteSaveById(existingSave.$id, postId, userId)
   } else {
     return await createSave(postId, userId)
   }

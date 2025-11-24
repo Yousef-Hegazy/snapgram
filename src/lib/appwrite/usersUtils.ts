@@ -17,3 +17,19 @@ export async function getUsers(limit?: number) {
 
   return users.rows
 }
+
+export async function getPagedUsers(lastId?: string, limit?: number) {
+  const queries = [Query.orderDesc('$createdAt'), Query.limit(limit || 10)]
+
+  if (lastId && lastId !== '0') {
+    queries.push(Query.cursorAfter(lastId))
+  }
+
+  const users = await database.listRows<Users>({
+    databaseId: appwriteConfig.databaseId,
+    tableId: appwriteConfig.usersTableId,
+    queries,
+  })
+
+  return users
+}

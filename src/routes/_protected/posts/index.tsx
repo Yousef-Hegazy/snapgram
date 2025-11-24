@@ -1,8 +1,12 @@
+import InfiniteQueryContainer from '@/components/shared/InfiniteQueryContainer'
 import PostCard from '@/components/shared/PostCard'
 import UserCard from '@/components/shared/UserCard'
 import Loader from '@/components/ui/Loader'
 import { useAuthContext } from '@/context/AuthContext'
-import { useGetPosts, useGetUsers } from '@/lib/react-query/queriesAndMutations'
+import {
+  useGetInfinitePosts,
+  useGetUsers,
+} from '@/lib/react-query/queriesAndMutations'
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/_protected/posts/')({
@@ -12,39 +16,43 @@ export const Route = createFileRoute('/_protected/posts/')({
 function RouteComponent() {
   const { user } = useAuthContext()
 
-  const { data: posts, isPending: loadingPosts, isError: isErrorPosts } = useGetPosts()
-  const { data: creators, isPending: loadingUsers, isError: isErrorCreators } = useGetUsers(10)
+  const {
+    data: posts,
+    isPending: isPendingPosts,
+    hasNextPage,
+    fetchNextPage,
+  } = useGetInfinitePosts()
 
-  if (isErrorPosts || isErrorCreators) {
-    return (
-      <div className="flex flex-1">
-        <div className="home-container">
-          <p className="body-medium text-light-1">Something bad happened</p>
-        </div>
-        <div className="home-creators">
-          <p className="body-medium text-light-1">Something bad happened</p>
-        </div>
-      </div>
-    );
-  }
+  const { data: creators, isPending: loadingUsers } = useGetUsers(10)
 
   return (
     <div className="flex flex-row flex-1">
       <div className="home-container">
-        <div className="home-posts">
-          <h2 className="h3-bold md:h2-bold text-left w-full">Home Feed</h2>
-          {loadingPosts ? (
-            <Loader />
-          ) : (
-            <ul className="flex flex-col flex-1 gap-9 w-full">
-              {posts
-                ? posts.map((p) => (
-                    <PostCard key={p.$id} post={p} currentUser={user} />
-                  ))
-                : null}
-            </ul>
-          )}
-        </div>
+        <InfiniteQueryContainer
+          fetchNextPage={fetchNextPage}
+          hasNextPage={hasNextPage}
+        >
+          <div className="home-posts">
+            <h2 className="h3-bold md:h2-bold text-left w-full">Home Feed</h2>
+            {isPendingPosts ? (
+              <Loader />
+            ) : (
+              <ul className="flex flex-col flex-1 gap-9 w-full">
+                {posts
+                  ? posts.pages.map((page) =>
+                      page.rows.map((post) => (
+                        <PostCard
+                          key={post.$id}
+                          post={post}
+                          currentUser={user}
+                        />
+                      )),
+                    )
+                  : null}
+              </ul>
+            )}
+          </div>
+        </InfiniteQueryContainer>
       </div>
 
       <div className="home-creators">
@@ -52,14 +60,16 @@ function RouteComponent() {
         {loadingUsers ? (
           <Loader />
         ) : creators ? (
-          <ul className='grid 2xl:grid-cols-2 gap-6'>
+          <ul className="grid 2xl:grid-cols-2 gap-6">
             {creators.map((creator) => (
               <li key={creator.$id}>
                 <UserCard user={creator} currentUserId={user.id} />
               </li>
             ))}
           </ul>
-        ) : null}
+        ) : (
+          <p className="body-medium text-light-1">Something bad happened</p>
+        )}
       </div>
     </div>
   )

@@ -31,7 +31,7 @@ import {
 
 import { INITIAL_USER, useAuthContext } from '@/context/AuthContext'
 import type { INewPost } from '@/types'
-import { getUsers } from '../appwrite/usersUtils'
+import { getPagedUsers, getUsers } from '../appwrite/usersUtils'
 
 export const useCreateUserAccount = () => {
   const navigate = useNavigate()
@@ -284,5 +284,18 @@ export const useGetUsers = (limit?: number) => {
     queryFn: () => getUsers(limit),
     staleTime: 1000 * 60, // 1 minutes
     refetchOnMount: 'always',
+  })
+}
+
+export const useInfiniteUsers = (limit?: number) => {
+  return useInfiniteQuery({
+    queryKey: [QUERY_KEYS.GET_USERS, 'infinite'],
+    queryFn: ({ pageParam }) => getPagedUsers(pageParam, limit),
+    getNextPageParam: (lastPage) => {
+      if (lastPage.rows.length === 0) return null
+      const lastId = lastPage.rows[lastPage.rows.length - 1]?.$id
+      return lastId
+    },
+    initialPageParam: '0',
   })
 }

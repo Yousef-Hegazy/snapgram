@@ -15,7 +15,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProfileIdRouteImport } from './routes/profile_/$id'
 import { Route as ProtectedSavedRouteImport } from './routes/_protected/saved'
 import { Route as ProtectedExploreRouteImport } from './routes/_protected/explore'
-import { Route as ProtectedAllUsersRouteImport } from './routes/_protected/all-users'
+import { Route as ProtectedCommunityRouteImport } from './routes/_protected/community'
 import { Route as AuthSignUpRouteImport } from './routes/_auth/sign-up'
 import { Route as AuthSignInRouteImport } from './routes/_auth/sign-in'
 import { Route as ProtectedPostsIndexRouteImport } from './routes/_protected/posts/index'
@@ -51,9 +51,9 @@ const ProtectedExploreRoute = ProtectedExploreRouteImport.update({
   path: '/explore',
   getParentRoute: () => ProtectedRouteRoute,
 } as any)
-const ProtectedAllUsersRoute = ProtectedAllUsersRouteImport.update({
-  id: '/all-users',
-  path: '/all-users',
+const ProtectedCommunityRoute = ProtectedCommunityRouteImport.update({
+  id: '/community',
+  path: '/community',
   getParentRoute: () => ProtectedRouteRoute,
 } as any)
 const AuthSignUpRoute = AuthSignUpRouteImport.update({
@@ -91,7 +91,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/sign-in': typeof AuthSignInRoute
   '/sign-up': typeof AuthSignUpRoute
-  '/all-users': typeof ProtectedAllUsersRoute
+  '/community': typeof ProtectedCommunityRoute
   '/explore': typeof ProtectedExploreRoute
   '/saved': typeof ProtectedSavedRoute
   '/profile/$id': typeof ProfileIdRoute
@@ -104,7 +104,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/sign-in': typeof AuthSignInRoute
   '/sign-up': typeof AuthSignUpRoute
-  '/all-users': typeof ProtectedAllUsersRoute
+  '/community': typeof ProtectedCommunityRoute
   '/explore': typeof ProtectedExploreRoute
   '/saved': typeof ProtectedSavedRoute
   '/profile/$id': typeof ProfileIdRoute
@@ -120,7 +120,7 @@ export interface FileRoutesById {
   '/_protected': typeof ProtectedRouteRouteWithChildren
   '/_auth/sign-in': typeof AuthSignInRoute
   '/_auth/sign-up': typeof AuthSignUpRoute
-  '/_protected/all-users': typeof ProtectedAllUsersRoute
+  '/_protected/community': typeof ProtectedCommunityRoute
   '/_protected/explore': typeof ProtectedExploreRoute
   '/_protected/saved': typeof ProtectedSavedRoute
   '/profile_/$id': typeof ProfileIdRoute
@@ -135,7 +135,7 @@ export interface FileRouteTypes {
     | '/'
     | '/sign-in'
     | '/sign-up'
-    | '/all-users'
+    | '/community'
     | '/explore'
     | '/saved'
     | '/profile/$id'
@@ -148,7 +148,7 @@ export interface FileRouteTypes {
     | '/'
     | '/sign-in'
     | '/sign-up'
-    | '/all-users'
+    | '/community'
     | '/explore'
     | '/saved'
     | '/profile/$id'
@@ -163,7 +163,7 @@ export interface FileRouteTypes {
     | '/_protected'
     | '/_auth/sign-in'
     | '/_auth/sign-up'
-    | '/_protected/all-users'
+    | '/_protected/community'
     | '/_protected/explore'
     | '/_protected/saved'
     | '/profile_/$id'
@@ -224,11 +224,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedExploreRouteImport
       parentRoute: typeof ProtectedRouteRoute
     }
-    '/_protected/all-users': {
-      id: '/_protected/all-users'
-      path: '/all-users'
-      fullPath: '/all-users'
-      preLoaderRoute: typeof ProtectedAllUsersRouteImport
+    '/_protected/community': {
+      id: '/_protected/community'
+      path: '/community'
+      fullPath: '/community'
+      preLoaderRoute: typeof ProtectedCommunityRouteImport
       parentRoute: typeof ProtectedRouteRoute
     }
     '/_auth/sign-up': {
@@ -291,7 +291,7 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
 )
 
 interface ProtectedRouteRouteChildren {
-  ProtectedAllUsersRoute: typeof ProtectedAllUsersRoute
+  ProtectedCommunityRoute: typeof ProtectedCommunityRoute
   ProtectedExploreRoute: typeof ProtectedExploreRoute
   ProtectedSavedRoute: typeof ProtectedSavedRoute
   ProtectedPostsCreateRoute: typeof ProtectedPostsCreateRoute
@@ -301,7 +301,7 @@ interface ProtectedRouteRouteChildren {
 }
 
 const ProtectedRouteRouteChildren: ProtectedRouteRouteChildren = {
-  ProtectedAllUsersRoute: ProtectedAllUsersRoute,
+  ProtectedCommunityRoute: ProtectedCommunityRoute,
   ProtectedExploreRoute: ProtectedExploreRoute,
   ProtectedSavedRoute: ProtectedSavedRoute,
   ProtectedPostsCreateRoute: ProtectedPostsCreateRoute,
