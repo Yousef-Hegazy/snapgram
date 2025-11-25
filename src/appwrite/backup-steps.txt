@@ -1,4 +1,4 @@
-1- Make sure you're inside appwrite folder
+1- Make sure you're inside appwrite folder and docker compose is stopped
 
 2- Pull database: docker run --rm -v appwrite_appwrite-mariadb:/data -v ${PWD}:/backup ubuntu tar czf /backup/appwrite-db-backup.tar.gz -C /data .
 
