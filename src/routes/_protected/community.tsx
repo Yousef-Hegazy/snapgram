@@ -10,7 +10,7 @@ export const Route = createFileRoute('/_protected/community')({
 })
 
 function RouteComponent() {
-  const {user: currentUser} = useAuthContext();
+  const { user: currentUser } = useAuthContext()
 
   const {
     data: users,
@@ -20,29 +20,33 @@ function RouteComponent() {
   } = useInfiniteUsers(10)
 
   return (
-    <InfiniteQueryContainer
-      fetchNextPage={fetchNextPage}
-      hasNextPage={hasNextPage}
-    >
-      <div className="common-container">
+    <div className="common-container">
+      <InfiniteQueryContainer
+        fetchNextPage={fetchNextPage}
+        hasNextPage={hasNextPage}
+      >
         <div className="user-container">
           <h2 className="h3-bold md:h2-bold text-left w-full">All Users</h2>
 
           {isPending ? (
             <Loader />
           ) : users?.pages ? (
-            <ul className='user-grid'>
+            <ul className="user-grid">
               {users.pages.map((page) =>
                 page.rows.map((user) => (
-                  <UserCard key={user.$id} user={user} currentUserId={currentUser.id} />
-                ))
+                  <UserCard
+                    key={user.$id}
+                    user={user}
+                    currentUserId={currentUser.id}
+                  />
+                )),
               )}
             </ul>
           ) : (
             <p className="text-light-2 mt-4">No users found.</p>
           )}
         </div>
-      </div>
-    </InfiniteQueryContainer>
+      </InfiniteQueryContainer>
+    </div>
   )
 }

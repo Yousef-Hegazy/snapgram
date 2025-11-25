@@ -21,6 +21,7 @@ import {
   deletePost,
   editPost,
   getInfinitePosts,
+  getInfiniteSavedPostsByUser,
   getPostDetails,
   getPostForEdit,
   getPosts,
@@ -30,18 +31,40 @@ import {
 } from '@/lib/appwrite/postUtils'
 
 import { INITIAL_USER, useAuthContext } from '@/context/AuthContext'
-import type { INewPost } from '@/types'
+import type { INewPost, IUser } from '@/types'
 import {
   getInfiniteUsers,
+  getUserById,
   getUsers,
   toggleFollow,
 } from '../appwrite/usersUtils'
 
 export const useCreateUserAccount = () => {
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
+  const { setUser, setIsAuthenticated } = useAuthContext()
   return useMutation({
     mutationFn: createUserAccount,
-    onSuccess: () => {
+    onSuccess: (data) => {
+      const user: IUser = {
+        id: data.$id,
+        name: data.name,
+        username: data.username || '',
+        email: data.email,
+        imageUrl: data.imageUrl,
+        bio: data.bio || '',
+        followeesCount: data.followeesCount || 0,
+        followersCount: data.followersCount || 0,
+        postCount: data.postCount || 0,
+      }
+      setUser(user)
+
+      setIsAuthenticated(true)
+
+      queryClient.setQueryData([QUERY_KEYS.GET_CURRENT_USER], data, {
+        updatedAt: Date.now(),
+      })
+
       navigate({
         to: '/posts',
         replace: true,
@@ -61,18 +84,24 @@ export const useSignInAccount = () => {
   return useMutation({
     mutationFn: signInAccount,
     onSuccess: (data) => {
-      setUser({
+      const user: IUser = {
         id: data.$id,
         name: data.name,
         username: data.username || '',
         email: data.email,
         imageUrl: data.imageUrl,
         bio: data.bio || '',
-      })
+        followeesCount: data.followeesCount || 0,
+        followersCount: data.followersCount || 0,
+        postCount: data.postCount || 0,
+      }
+      setUser(user)
 
       setIsAuthenticated(true)
 
-      queryClient.setQueryData([QUERY_KEYS.GET_CURRENT_USER], data)
+      queryClient.setQueryData([QUERY_KEYS.GET_CURRENT_USER], data, {
+        updatedAt: Date.now(),
+      })
 
       navigate({
         to: '/posts',
@@ -108,14 +137,16 @@ export const useLogout = () => {
       await logout()
     },
     onSuccess: async () => {
-      setUser(INITIAL_USER)
-      setIsAuthenticated(false)
-
-      queryClient.setQueryData([QUERY_KEYS.GET_CURRENT_USER], null)
-
       navigate({
         to: '/sign-in',
         replace: true,
+      })
+
+      setUser(INITIAL_USER)
+      setIsAuthenticated(false)
+
+      queryClient.setQueryData([QUERY_KEYS.GET_CURRENT_USER], null, {
+        updatedAt: Date.now(),
       })
     },
   })
@@ -321,5 +352,28 @@ export const useToggleFollowUser = () => {
     onError: (error) => {
       toast.error(error.message || 'Failed to toggle follow user')
     },
+  })
+}
+
+export const useGetUserById = (userId: string) => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.GET_USER_BY_ID, userId],
+    queryFn: () => getUserById(userId),
+    staleTime: 1000 * 60, // 1 minutes
+    refetchOnMount: 'always',
+  })
+}
+
+export const useGetInfiniteSaves = (userId: string, limit?: number) => {
+  return useInfiniteQuery({
+    queryKey: [QUERY_KEYS.GET_POSTS, userId, 'infinite-saves'],
+    queryFn: async ({ pageParam }) =>
+      getInfiniteSavedPostsByUser(userId, pageParam, limit),
+    getNextPageParam: (lastPage) => {
+      if (lastPage.rows.length === 0) return null
+      const lastId = lastPage.rows[lastPage.rows.length - 1]?.$id
+      return lastId
+    },
+    initialPageParam: '0',
   })
 }

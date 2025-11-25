@@ -452,7 +452,11 @@ export async function createSave(postId: string, userId: string) {
   return createdSave
 }
 
-export async function deleteSaveById(saveId: string, postId: string, userId: string) {
+export async function deleteSaveById(
+  saveId: string,
+  postId: string,
+  userId: string,
+) {
   await database.deleteRow({
     databaseId: appwriteConfig.databaseId,
     tableId: appwriteConfig.savesTableId,
@@ -533,4 +537,34 @@ export async function searchPosts(queryString: string) {
     console.log(error)
     return []
   }
+}
+
+export async function getInfiniteSavedPostsByUser(
+  userId: string,
+  lastId: string,
+  limit?: number,
+) {
+  const queries = [
+    Query.equal('user', userId),
+    Query.orderDesc('$createdAt'),
+    Query.limit(limit || 20),
+    Query.select([
+      'post.*',
+      'post.creator.*',
+      'post.likes.user',
+      'post.save.user',
+    ]),
+  ]
+
+  if (lastId && lastId !== '0') {
+    queries.push(Query.cursorAfter(lastId))
+  }
+
+  const saves = await database.listRows<Saves>({
+    databaseId: appwriteConfig.databaseId,
+    tableId: appwriteConfig.savesTableId,
+    queries,
+  })
+
+  return saves;
 }

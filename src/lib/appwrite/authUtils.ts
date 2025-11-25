@@ -12,11 +12,15 @@ export async function createUserAccount(user: INewUser) {
     name: user.name,
   })
 
+  console.log('Account created')
+
   if (!newAccount.$id) throw new Error('Failed to create account')
 
   const avatarUrl = avatars.getInitials({
     name: user.name,
   })
+
+  console.log('User saved to database')
 
   const newUser = await saveUserToDB({
     id: newAccount.$id,
@@ -24,6 +28,7 @@ export async function createUserAccount(user: INewUser) {
     name: newAccount.name,
     username: user.username,
     imageUrl: avatarUrl,
+    password: user.password,
   })
 
   if (!newUser.$id) throw new Error('Failed to save user to database')
@@ -37,8 +42,14 @@ export async function saveUserToDB(user: {
   name: string
   imageUrl: string
   username?: string
+  password: string
 }) {
   try {
+    await account.createEmailPasswordSession({
+      email: user.email,
+      password: user.password,
+    })
+
     const newUser = await database.createRow({
       databaseId: appwriteConfig.databaseId,
       tableId: appwriteConfig.usersTableId,
@@ -51,9 +62,9 @@ export async function saveUserToDB(user: {
       },
     })
 
-    return newUser
+    return newUser as unknown as Users
   } catch (error) {
-    console.log(error)
+    console.log(error, 'saveUserToDB')
     throw error
   }
 }

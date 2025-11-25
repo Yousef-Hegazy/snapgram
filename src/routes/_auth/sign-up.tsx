@@ -10,10 +10,7 @@ import {
 import { Input } from '@/components/ui/input'
 import Loader from '@/components/ui/Loader'
 import { PasswordInput } from '@/components/ui/PasswordInput'
-import {
-  useCreateUserAccount,
-  useSignInAccount,
-} from '@/lib/react-query/queriesAndMutations'
+import { useCreateUserAccount } from '@/lib/react-query/queriesAndMutations'
 import { SignUpValidation } from '@/lib/validations'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { createFileRoute, Link } from '@tanstack/react-router'
@@ -41,8 +38,8 @@ function RouteComponent() {
   const { mutateAsync: createUserAccount, isPending: isCreatingUser } =
     useCreateUserAccount()
 
-  const { mutateAsync: signInAccount, isPending: isSigningIn } =
-    useSignInAccount()
+  // const { mutateAsync: signInAccount, isPending: isSigningIn } =
+  //   useSignInAccount()
 
   const onSubmit = async (data: FormFields) => {
     const newUser = await createUserAccount(data)
@@ -52,10 +49,10 @@ function RouteComponent() {
       return
     }
 
-    await signInAccount({
-      email: data.email,
-      password: data.password,
-    })
+    // await signInAccount({
+    //   email: data.email,
+    //   password: data.password,
+    // })
   }
 
   return (
@@ -131,7 +128,7 @@ function RouteComponent() {
           />
 
           <Button type="submit" className="shad-button_primary">
-            {isCreatingUser || isSigningIn ? (
+            {isCreatingUser ? (
               <div className="flex-center gap-2">
                 <Loader /> Loading...
               </div>

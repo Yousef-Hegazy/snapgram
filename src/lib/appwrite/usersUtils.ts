@@ -21,6 +21,16 @@ export async function getUsers(limit?: number) {
   return users.rows
 }
 
+export async function getUserById(userId: string) {
+  const user = await database.getRow<Users>({
+    databaseId: appwriteConfig.databaseId,
+    tableId: appwriteConfig.usersTableId,
+    rowId: userId,
+  })
+
+  return user
+}
+
 export async function getInfiniteUsers(lastId?: string, limit?: number) {
   const queries = [
     Query.orderDesc('postCount'),

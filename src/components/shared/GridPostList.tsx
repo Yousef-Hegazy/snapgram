@@ -1,4 +1,4 @@
-import type { Posts } from '@/appwrite/types/appwrite'
+import type { Posts, Saves } from '@/appwrite/types/appwrite'
 import { useAuthContext } from '@/context/AuthContext'
 import { Link } from '@tanstack/react-router'
 import { PostStats } from './PostCard/PostStats'
@@ -8,7 +8,7 @@ const GridPostList = ({
   showUser = true,
   showStats = true,
 }: {
-  posts: Posts[]
+  posts: Posts[] | Saves[]
   showUser?: boolean
   showStats?: boolean
 }) => {
@@ -16,37 +16,46 @@ const GridPostList = ({
 
   return (
     <ul className="grid-container">
-      {posts.map((post) => (
-        <li key={post.$id} className="relative min-w-80 h-80">
-          <Link
-            to="/posts/$id"
-            params={{ id: post.$id }}
-            className="grid-post_link"
-          >
-            <img
-              src={post.imageUrl}
-              alt={post.caption || 'post'}
-              className="object-cover w-full h-full"
-            />
-          </Link>
+      {posts.map((postOrSave) => {
+        let post
+        if ('post' in postOrSave) {
+          post = postOrSave.post
+        } else {
+          post = postOrSave
+        }
 
-          <div className="grid-post_user">
-            {showUser ? (
-              <div className="flex items-center justify-start gap-2 flex-1">
-                <img
-                  src={post.creator.imageUrl}
-                  alt="creator"
-                  className="size-8 rounded-full"
-                />
+        return (
+          <li key={post.$id} className="relative min-w-80 h-80">
+            <Link
+              to="/posts/$id"
+              params={{ id: post.$id }}
+              className="grid-post_link"
+            >
+              <img
+                src={post.imageUrl}
+                alt={post.caption || 'post'}
+                className="object-cover w-full h-full"
+              />
+            </Link>
 
-                <p className="line-clamp-1">{post.creator.name}</p>
-              </div>
-            ) : null}
+            <div className="grid-post_user">
+              {showUser ? (
+                <div className="flex items-center justify-start gap-2 flex-1">
+                  <img
+                    src={post.creator.imageUrl}
+                    alt="creator"
+                    className="size-8 rounded-full"
+                  />
 
-            {showStats ? <PostStats post={post} userId={user.id} /> : null}
-          </div>
-        </li>
-      ))}
+                  <p className="line-clamp-1">{post.creator.name}</p>
+                </div>
+              ) : null}
+
+              {showStats ? <PostStats post={post} userId={user.id} /> : null}
+            </div>
+          </li>
+        )
+      })}
     </ul>
   )
 }

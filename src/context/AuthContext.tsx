@@ -13,7 +13,7 @@ import {
   useState,
 } from 'react'
 
-export const INITIAL_USER = {
+export const INITIAL_USER: IUser = {
   id: '',
   name: '',
   username: '',
@@ -22,8 +22,9 @@ export const INITIAL_USER = {
   bio: '',
   // followers: [],
   // followees: [],
-  // followersCount: 0,
-  // followeesCount: 0,
+  followersCount: 0,
+  followeesCount: 0,
+  postCount: 0,
 }
 
 const INITIAL_STATE = {
@@ -64,6 +65,9 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         email: currentUser.email,
         imageUrl: currentUser.imageUrl,
         bio: currentUser.bio || '',
+        postCount: currentUser.postCount || 0,
+        followersCount: currentUser.followersCount || 0,
+        followeesCount: currentUser.followeesCount || 0,
       })
     }
   })
