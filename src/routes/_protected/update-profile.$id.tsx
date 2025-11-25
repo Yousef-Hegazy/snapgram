@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 
-export const Route = createFileRoute('/update-profile/$id')({
+export const Route = createFileRoute('/_protected/update-profile/$id')({
   component: RouteComponent,
 })
 

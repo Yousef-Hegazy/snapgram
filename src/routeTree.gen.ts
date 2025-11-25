@@ -12,14 +12,14 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as ProtectedRouteRouteImport } from './routes/_protected/route'
 import { Route as AuthRouteRouteImport } from './routes/_auth/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as UpdateProfileIdRouteImport } from './routes/update-profile.$id'
-import { Route as ProfileIdRouteImport } from './routes/profile.$id'
 import { Route as ProtectedSavedRouteImport } from './routes/_protected/saved'
 import { Route as ProtectedExploreRouteImport } from './routes/_protected/explore'
 import { Route as ProtectedCommunityRouteImport } from './routes/_protected/community'
 import { Route as AuthSignUpRouteImport } from './routes/_auth/sign-up'
 import { Route as AuthSignInRouteImport } from './routes/_auth/sign-in'
 import { Route as ProtectedPostsIndexRouteImport } from './routes/_protected/posts/index'
+import { Route as ProtectedUpdateProfileIdRouteImport } from './routes/_protected/update-profile.$id'
+import { Route as ProtectedProfileIdRouteImport } from './routes/_protected/profile.$id'
 import { Route as ProtectedPostsCreateRouteImport } from './routes/_protected/posts/create'
 import { Route as ProtectedPostsIdIndexRouteImport } from './routes/_protected/posts/$id/index'
 import { Route as ProtectedPostsIdEditRouteImport } from './routes/_protected/posts/$id/edit'
@@ -35,16 +35,6 @@ const AuthRouteRoute = AuthRouteRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const UpdateProfileIdRoute = UpdateProfileIdRouteImport.update({
-  id: '/update-profile/$id',
-  path: '/update-profile/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProfileIdRoute = ProfileIdRouteImport.update({
-  id: '/profile/$id',
-  path: '/profile/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProtectedSavedRoute = ProtectedSavedRouteImport.update({
@@ -77,6 +67,17 @@ const ProtectedPostsIndexRoute = ProtectedPostsIndexRouteImport.update({
   path: '/posts/',
   getParentRoute: () => ProtectedRouteRoute,
 } as any)
+const ProtectedUpdateProfileIdRoute =
+  ProtectedUpdateProfileIdRouteImport.update({
+    id: '/update-profile/$id',
+    path: '/update-profile/$id',
+    getParentRoute: () => ProtectedRouteRoute,
+  } as any)
+const ProtectedProfileIdRoute = ProtectedProfileIdRouteImport.update({
+  id: '/profile/$id',
+  path: '/profile/$id',
+  getParentRoute: () => ProtectedRouteRoute,
+} as any)
 const ProtectedPostsCreateRoute = ProtectedPostsCreateRouteImport.update({
   id: '/posts/create',
   path: '/posts/create',
@@ -100,9 +101,9 @@ export interface FileRoutesByFullPath {
   '/community': typeof ProtectedCommunityRoute
   '/explore': typeof ProtectedExploreRoute
   '/saved': typeof ProtectedSavedRoute
-  '/profile/$id': typeof ProfileIdRoute
-  '/update-profile/$id': typeof UpdateProfileIdRoute
   '/posts/create': typeof ProtectedPostsCreateRoute
+  '/profile/$id': typeof ProtectedProfileIdRoute
+  '/update-profile/$id': typeof ProtectedUpdateProfileIdRoute
   '/posts': typeof ProtectedPostsIndexRoute
   '/posts/$id/edit': typeof ProtectedPostsIdEditRoute
   '/posts/$id': typeof ProtectedPostsIdIndexRoute
@@ -114,9 +115,9 @@ export interface FileRoutesByTo {
   '/community': typeof ProtectedCommunityRoute
   '/explore': typeof ProtectedExploreRoute
   '/saved': typeof ProtectedSavedRoute
-  '/profile/$id': typeof ProfileIdRoute
-  '/update-profile/$id': typeof UpdateProfileIdRoute
   '/posts/create': typeof ProtectedPostsCreateRoute
+  '/profile/$id': typeof ProtectedProfileIdRoute
+  '/update-profile/$id': typeof ProtectedUpdateProfileIdRoute
   '/posts': typeof ProtectedPostsIndexRoute
   '/posts/$id/edit': typeof ProtectedPostsIdEditRoute
   '/posts/$id': typeof ProtectedPostsIdIndexRoute
@@ -131,9 +132,9 @@ export interface FileRoutesById {
   '/_protected/community': typeof ProtectedCommunityRoute
   '/_protected/explore': typeof ProtectedExploreRoute
   '/_protected/saved': typeof ProtectedSavedRoute
-  '/profile/$id': typeof ProfileIdRoute
-  '/update-profile/$id': typeof UpdateProfileIdRoute
   '/_protected/posts/create': typeof ProtectedPostsCreateRoute
+  '/_protected/profile/$id': typeof ProtectedProfileIdRoute
+  '/_protected/update-profile/$id': typeof ProtectedUpdateProfileIdRoute
   '/_protected/posts/': typeof ProtectedPostsIndexRoute
   '/_protected/posts/$id/edit': typeof ProtectedPostsIdEditRoute
   '/_protected/posts/$id/': typeof ProtectedPostsIdIndexRoute
@@ -147,9 +148,9 @@ export interface FileRouteTypes {
     | '/community'
     | '/explore'
     | '/saved'
+    | '/posts/create'
     | '/profile/$id'
     | '/update-profile/$id'
-    | '/posts/create'
     | '/posts'
     | '/posts/$id/edit'
     | '/posts/$id'
@@ -161,9 +162,9 @@ export interface FileRouteTypes {
     | '/community'
     | '/explore'
     | '/saved'
+    | '/posts/create'
     | '/profile/$id'
     | '/update-profile/$id'
-    | '/posts/create'
     | '/posts'
     | '/posts/$id/edit'
     | '/posts/$id'
@@ -177,9 +178,9 @@ export interface FileRouteTypes {
     | '/_protected/community'
     | '/_protected/explore'
     | '/_protected/saved'
-    | '/profile/$id'
-    | '/update-profile/$id'
     | '/_protected/posts/create'
+    | '/_protected/profile/$id'
+    | '/_protected/update-profile/$id'
     | '/_protected/posts/'
     | '/_protected/posts/$id/edit'
     | '/_protected/posts/$id/'
@@ -189,8 +190,6 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRouteRoute: typeof AuthRouteRouteWithChildren
   ProtectedRouteRoute: typeof ProtectedRouteRouteWithChildren
-  ProfileIdRoute: typeof ProfileIdRoute
-  UpdateProfileIdRoute: typeof UpdateProfileIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -214,20 +213,6 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/update-profile/$id': {
-      id: '/update-profile/$id'
-      path: '/update-profile/$id'
-      fullPath: '/update-profile/$id'
-      preLoaderRoute: typeof UpdateProfileIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/profile/$id': {
-      id: '/profile/$id'
-      path: '/profile/$id'
-      fullPath: '/profile/$id'
-      preLoaderRoute: typeof ProfileIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_protected/saved': {
@@ -270,6 +255,20 @@ declare module '@tanstack/react-router' {
       path: '/posts'
       fullPath: '/posts'
       preLoaderRoute: typeof ProtectedPostsIndexRouteImport
+      parentRoute: typeof ProtectedRouteRoute
+    }
+    '/_protected/update-profile/$id': {
+      id: '/_protected/update-profile/$id'
+      path: '/update-profile/$id'
+      fullPath: '/update-profile/$id'
+      preLoaderRoute: typeof ProtectedUpdateProfileIdRouteImport
+      parentRoute: typeof ProtectedRouteRoute
+    }
+    '/_protected/profile/$id': {
+      id: '/_protected/profile/$id'
+      path: '/profile/$id'
+      fullPath: '/profile/$id'
+      preLoaderRoute: typeof ProtectedProfileIdRouteImport
       parentRoute: typeof ProtectedRouteRoute
     }
     '/_protected/posts/create': {
@@ -315,6 +314,8 @@ interface ProtectedRouteRouteChildren {
   ProtectedExploreRoute: typeof ProtectedExploreRoute
   ProtectedSavedRoute: typeof ProtectedSavedRoute
   ProtectedPostsCreateRoute: typeof ProtectedPostsCreateRoute
+  ProtectedProfileIdRoute: typeof ProtectedProfileIdRoute
+  ProtectedUpdateProfileIdRoute: typeof ProtectedUpdateProfileIdRoute
   ProtectedPostsIndexRoute: typeof ProtectedPostsIndexRoute
   ProtectedPostsIdEditRoute: typeof ProtectedPostsIdEditRoute
   ProtectedPostsIdIndexRoute: typeof ProtectedPostsIdIndexRoute
@@ -325,6 +326,8 @@ const ProtectedRouteRouteChildren: ProtectedRouteRouteChildren = {
   ProtectedExploreRoute: ProtectedExploreRoute,
   ProtectedSavedRoute: ProtectedSavedRoute,
   ProtectedPostsCreateRoute: ProtectedPostsCreateRoute,
+  ProtectedProfileIdRoute: ProtectedProfileIdRoute,
+  ProtectedUpdateProfileIdRoute: ProtectedUpdateProfileIdRoute,
   ProtectedPostsIndexRoute: ProtectedPostsIndexRoute,
   ProtectedPostsIdEditRoute: ProtectedPostsIdEditRoute,
   ProtectedPostsIdIndexRoute: ProtectedPostsIdIndexRoute,
@@ -338,8 +341,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRouteRoute: AuthRouteRouteWithChildren,
   ProtectedRouteRoute: ProtectedRouteRouteWithChildren,
-  ProfileIdRoute: ProfileIdRoute,
-  UpdateProfileIdRoute: UpdateProfileIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

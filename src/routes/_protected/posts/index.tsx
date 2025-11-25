@@ -3,10 +3,7 @@ import PostCard from '@/components/shared/PostCard'
 import UserCard from '@/components/shared/UserCard'
 import Loader from '@/components/ui/Loader'
 import { useAuthContext } from '@/context/AuthContext'
-import {
-  useGetInfinitePosts,
-  useGetUsers,
-} from '@/lib/react-query/queriesAndMutations'
+import { useGetInfinitePosts, useGetUsers } from '@/lib/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/_protected/posts/')({

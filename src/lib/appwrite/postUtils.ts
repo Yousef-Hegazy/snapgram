@@ -50,21 +50,6 @@ export async function getPostDetails(postId: string) {
   return post
 }
 
-// export async function getPostById(postId: string) {
-//   try {
-//     const post = await database.getRow<Posts>({
-//       databaseId: appwriteConfig.databaseId,
-//       tableId: appwriteConfig.postsTableId,
-//       rowId: postId,
-//       queries: [Query.select(['*'])],
-//     })
-
-//     return post
-//   } catch {
-//     return null
-//   }
-// }
-
 export async function createPost({
   file,
   caption,
@@ -120,14 +105,6 @@ export async function createPost({
     throw new Error('Post creation failed')
   }
 
-  await database.incrementRowColumn<Users>({
-    databaseId: appwriteConfig.databaseId,
-    tableId: appwriteConfig.usersTableId,
-    rowId: userId,
-    column: 'postCount',
-    value: 1,
-  })
-
   const like = await database.createRow<Likes>({
     databaseId: appwriteConfig.databaseId,
     tableId: appwriteConfig.likesTableId,
@@ -138,24 +115,16 @@ export async function createPost({
     },
   })
 
-  await database.incrementRowColumn<Users>({
-    databaseId: appwriteConfig.databaseId,
-    tableId: appwriteConfig.usersTableId,
-    rowId: userId,
-    column: 'likeCount',
-    value: 1,
-  })
-
-  if (!like?.$id) {
-    await database.decrementRowColumn<Posts>({
+  if (like?.$id) {
+    await database.incrementRowColumn<Users>({
       databaseId: appwriteConfig.databaseId,
-      tableId: appwriteConfig.postsTableId,
-      rowId: post.$id,
-      column: 'likesCount',
+      tableId: appwriteConfig.usersTableId,
+      rowId: userId,
+      column: 'postCount',
       value: 1,
     })
 
-    await database.decrementRowColumn<Users>({
+    await database.incrementRowColumn<Users>({
       databaseId: appwriteConfig.databaseId,
       tableId: appwriteConfig.usersTableId,
       rowId: userId,
@@ -492,7 +461,13 @@ export async function savePost(postId: string, userId: string) {
   }
 }
 
-export async function getInfinitePosts({ page }: { page?: string }) {
+export async function getInfinitePosts({
+  page,
+  userId,
+}: {
+  page?: string
+  userId?: string
+}) {
   const queries = [
     Query.orderDesc('$updatedAt'),
     Query.limit(20),
@@ -501,6 +476,10 @@ export async function getInfinitePosts({ page }: { page?: string }) {
 
   if (page && page !== '0') {
     queries.push(Query.cursorAfter(page))
+  }
+
+  if (userId) {
+    queries.push(Query.equal('creator.$id', userId))
   }
 
   try {
@@ -539,32 +518,4 @@ export async function searchPosts(queryString: string) {
   }
 }
 
-export async function getInfiniteSavedPostsByUser(
-  userId: string,
-  lastId: string,
-  limit?: number,
-) {
-  const queries = [
-    Query.equal('user', userId),
-    Query.orderDesc('$createdAt'),
-    Query.limit(limit || 20),
-    Query.select([
-      'post.*',
-      'post.creator.*',
-      'post.likes.user',
-      'post.save.user',
-    ]),
-  ]
 
-  if (lastId && lastId !== '0') {
-    queries.push(Query.cursorAfter(lastId))
-  }
-
-  const saves = await database.listRows<Saves>({
-    databaseId: appwriteConfig.databaseId,
-    tableId: appwriteConfig.savesTableId,
-    queries,
-  })
-
-  return saves;
-}

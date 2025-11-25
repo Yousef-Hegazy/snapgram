@@ -1,9 +1,10 @@
 import type { Users } from '@/appwrite/types/appwrite'
+import useIsFollowing from '@/hooks/useIsFollowing'
+import { useToggleFollowUser } from '@/lib/react-query'
+import { cn } from '@/lib/utils'
 import { Link } from '@tanstack/react-router'
 import { Button } from '../ui/button'
-import { useToggleFollowUser } from '@/lib/react-query/queriesAndMutations'
 import Loader from '../ui/Loader'
-import { cn } from '@/lib/utils'
 
 type Props = {
   user: Users
@@ -11,12 +12,7 @@ type Props = {
 }
 
 const UserCard = ({ user, currentUserId }: Props) => {
-  
-  const isCurrentUser = user.$id === currentUserId
-  const isFollowing =
-    !isCurrentUser &&
-    user.followersCount &&
-    (user.followers || [])?.find((follower) => follower.follower?.toString() === currentUserId)
+  const { isFollowing, isCurrentUser } = useIsFollowing(currentUserId, user)
 
   const { mutate: toggleFollow, isPending: isTogglingFollow } =
     useToggleFollowUser()
@@ -46,7 +42,11 @@ const UserCard = ({ user, currentUserId }: Props) => {
       </div>
 
       {isCurrentUser ? (
-        <Button type="button" size="sm" className="shad-button_dark_4 px-5 pointer-events-none">
+        <Button
+          type="button"
+          size="sm"
+          className="shad-button_dark_4 px-5 pointer-events-none"
+        >
           You
         </Button>
       ) : (
@@ -54,9 +54,9 @@ const UserCard = ({ user, currentUserId }: Props) => {
           onClick={handleFollow}
           type="button"
           size="sm"
-          className={cn("px-5", {
-            "shad-button_primary": !isFollowing,
-            "shad-button_dark_4": isFollowing,
+          className={cn('px-5', {
+            'shad-button_primary': !isFollowing,
+            'shad-button_dark_4': isFollowing,
           })}
         >
           {isTogglingFollow ? <Loader /> : isFollowing ? 'Unfollow' : 'Follow'}

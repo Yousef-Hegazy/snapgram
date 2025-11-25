@@ -10,7 +10,7 @@ import {
 import { Input } from '@/components/ui/input'
 import Loader from '@/components/ui/Loader'
 import { PasswordInput } from '@/components/ui/PasswordInput'
-import { useCreateUserAccount } from '@/lib/react-query/queriesAndMutations'
+import { useCreateUserAccount } from '@/lib/react-query'
 import { SignUpValidation } from '@/lib/validations'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { createFileRoute, Link } from '@tanstack/react-router'

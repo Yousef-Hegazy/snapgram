@@ -1,5 +1,5 @@
 import { appwriteConfig, database } from '@/appwrite/config'
-import type { Follows, Users } from '@/appwrite/types/appwrite'
+import type { Follows, Saves, Users } from '@/appwrite/types/appwrite'
 import { ID, Query } from 'appwrite'
 
 export async function getUsers(limit?: number) {
@@ -26,6 +26,7 @@ export async function getUserById(userId: string) {
     databaseId: appwriteConfig.databaseId,
     tableId: appwriteConfig.usersTableId,
     rowId: userId,
+    queries: [Query.select(['*', 'followers.follower'])],
   })
 
   return user
@@ -52,14 +53,14 @@ export async function getInfiniteUsers(lastId?: string, limit?: number) {
 }
 
 export async function removeFollow(
-  flollowId: string,
+  followId: string,
   userId: string,
   followerId: string,
 ) {
   await database.deleteRow({
     databaseId: appwriteConfig.databaseId,
     tableId: appwriteConfig.followsTableId,
-    rowId: flollowId,
+    rowId: followId,
   })
 
   await database.decrementRowColumn({
@@ -130,4 +131,96 @@ export async function toggleFollow(userId: string, followerId: string) {
   } else {
     return await addFollow(userId, followerId)
   }
+}
+
+export async function getInfiniteSavedPostsByUser(
+  userId: string,
+  lastId: string,
+  limit?: number,
+) {
+  const queries = [
+    Query.equal('user', userId),
+    Query.orderDesc('$createdAt'),
+    Query.limit(limit || 20),
+    Query.select(['post.*', 'post.creator.*', 'post.likes.user']),
+  ]
+
+  if (lastId && lastId !== '0') {
+    queries.push(Query.cursorAfter(lastId))
+  }
+
+  const saves = await database.listRows<Saves>({
+    databaseId: appwriteConfig.databaseId,
+    tableId: appwriteConfig.savesTableId,
+    queries,
+  })
+
+  return saves
+}
+
+export async function getInfiniteLikedPostsByUser(
+  userId: string,
+  lastId: string,
+  limit?: number,
+) {
+  const queries = [
+    Query.equal('user', userId),
+    Query.orderDesc('$createdAt'),
+    Query.limit(limit || 20),
+    Query.select(['post.*', 'post.creator.*', 'post.save.user']),
+  ]
+
+  if (lastId && lastId !== '0') {
+    queries.push(Query.cursorAfter(lastId))
+  }
+
+  const likes = await database.listRows<any>({
+    databaseId: appwriteConfig.databaseId,
+    tableId: appwriteConfig.likesTableId,
+    queries,
+  })
+
+  return likes
+}
+
+export async function getInfiniteFollowers(userId: string, lastId: string, limit?: number) {
+  const queries = [
+    Query.equal('followee', userId),
+    Query.orderDesc('$createdAt'),
+    Query.limit(limit || 20),
+    Query.select(['follower.*', 'follower.followers.follower']),
+  ]
+
+  if (lastId && lastId !== '0') {
+    queries.push(Query.cursorAfter(lastId))
+  }
+
+  const followers = await database.listRows<Follows>({
+    databaseId: appwriteConfig.databaseId,
+    tableId: appwriteConfig.followsTableId,
+    queries,
+  })
+
+  return followers
+}
+
+export async function getInfiniteFollowings(userId: string, lastId: string, limit?: number) {
+  const queries = [
+    Query.equal('follower', userId),
+    Query.orderDesc('$createdAt'),
+    Query.limit(limit || 20),
+    Query.select(['followee.*']),
+  ]
+
+  if (lastId && lastId !== '0') {
+    queries.push(Query.cursorAfter(lastId))
+  }
+
+  const followers = await database.listRows<Follows>({
+    databaseId: appwriteConfig.databaseId,
+    tableId: appwriteConfig.followsTableId,
+    queries,
+  })
+
+  return followers
 }

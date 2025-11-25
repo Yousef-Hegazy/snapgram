@@ -1,13 +1,25 @@
 'use client'
 
 import type { Posts } from '@/appwrite/types/appwrite'
-import { useLikePost, useSavePost } from '@/lib/react-query/queriesAndMutations'
 import Loader from '@/components/ui/Loader'
+import { useLikePost, useSavePost } from '@/lib/react-query'
 import { cn } from '@/lib/utils'
 
-export function PostStats({ post, userId }: { post: Posts; userId: string }) {
-  const isLiked = post.likes?.some((l) => l.user?.toString() === userId)
-  const isSaved = post.save?.some((s) => s.user?.toString() === userId)
+export function PostStats({
+  post,
+  userId,
+  isLikedPosts = false,
+  isSavedPosts = false,
+}: {
+  post: Posts
+  userId: string
+  isLikedPosts?: boolean
+  isSavedPosts?: boolean
+}) {
+  const isLiked =
+    isLikedPosts || post.likes?.some((l) => l.user?.toString() === userId)
+  const isSaved =
+    isSavedPosts || post.save?.some((s) => s.user?.toString() === userId)
 
   const { mutate: likePost, isPending: isLikingPost } = useLikePost()
   const { mutate: savePost, isPending: isSavingPost } = useSavePost()

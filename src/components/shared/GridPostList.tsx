@@ -1,4 +1,4 @@
-import type { Posts, Saves } from '@/appwrite/types/appwrite'
+import type { Likes, Posts, Saves } from '@/appwrite/types/appwrite'
 import { useAuthContext } from '@/context/AuthContext'
 import { Link } from '@tanstack/react-router'
 import { PostStats } from './PostCard/PostStats'
@@ -7,10 +7,14 @@ const GridPostList = ({
   posts,
   showUser = true,
   showStats = true,
+  isLikedPosts = false,
+  isSavedPosts = false,
 }: {
-  posts: Posts[] | Saves[]
+  posts: Posts[] | Saves[] | Likes[]
   showUser?: boolean
   showStats?: boolean
+  isLikedPosts?: boolean
+  isSavedPosts?: boolean
 }) => {
   const { user } = useAuthContext()
 
@@ -51,7 +55,14 @@ const GridPostList = ({
                 </div>
               ) : null}
 
-              {showStats ? <PostStats post={post} userId={user.id} /> : null}
+              {showStats ? (
+                <PostStats
+                  post={post}
+                  userId={user.id}
+                  isLikedPosts={isLikedPosts}
+                  isSavedPosts={isSavedPosts}
+                />
+              ) : null}
             </div>
           </li>
         )

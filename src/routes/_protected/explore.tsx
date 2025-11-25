@@ -3,10 +3,7 @@ import InfiniteQueryContainer from '@/components/shared/InfiniteQueryContainer'
 import SearchResults from '@/components/shared/SearchResults'
 import { Input } from '@/components/ui/input'
 import Loader from '@/components/ui/Loader'
-import {
-  useGetInfinitePosts,
-  useSearchPosts,
-} from '@/lib/react-query/queriesAndMutations'
+import { useGetInfinitePosts, useSearchPosts } from '@/lib/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { useDebounce } from '@uidotdev/usehooks'
 import { useState } from 'react'

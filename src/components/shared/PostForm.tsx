@@ -13,10 +13,7 @@ import { Input } from '@/components/ui/input'
 import Loader from '@/components/ui/Loader'
 import { Textarea } from '@/components/ui/textarea'
 import { useAuthContext } from '@/context/AuthContext'
-import {
-  useCreatePost,
-  useEditPost,
-} from '@/lib/react-query/queriesAndMutations'
+import { useCreatePost, useEditPost } from '@/lib/react-query'
 import { PostValidation } from '@/lib/validations'
 import type { INewPost } from '@/types'
 import { zodResolver } from '@hookform/resolvers/zod'

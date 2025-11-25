@@ -2,7 +2,7 @@ import GridPostList from '@/components/shared/GridPostList'
 import InfiniteQueryContainer from '@/components/shared/InfiniteQueryContainer'
 import Loader from '@/components/ui/Loader'
 import { useAuthContext } from '@/context/AuthContext'
-import { useGetInfiniteSaves } from '@/lib/react-query/queriesAndMutations'
+import { useGetInfiniteSaves } from '@/lib/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/_protected/saved')({
@@ -45,7 +45,7 @@ function RouteComponent() {
               <GridPostList
                 key={`page-${pageIndex}`}
                 posts={page.rows}
-                showStats={false}
+                isSavedPosts={true}
               />
             ))}
           </ul>

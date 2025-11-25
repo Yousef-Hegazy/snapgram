@@ -1,6 +1,6 @@
 import { Button } from './button'
 import Loader from './Loader'
-import { useLogout } from '@/lib/react-query/queriesAndMutations'
+import { useLogout } from '@/lib/react-query'
 
 const TopbarLogoutBtn = ({
   children,

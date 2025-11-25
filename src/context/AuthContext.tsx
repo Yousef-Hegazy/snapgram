@@ -1,7 +1,4 @@
-import {
-  useGetCurrentUser,
-  useLogout,
-} from '@/lib/react-query/queriesAndMutations'
+import { useGetCurrentUser, useLogout } from '@/lib/react-query'
 import { QUERY_KEYS } from '@/lib/react-query/queryKeys'
 import type { IAuthContextType, IUser } from '@/types'
 import { useQueryClient } from '@tanstack/react-query'

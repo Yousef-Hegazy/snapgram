@@ -4,10 +4,7 @@ import { Button } from '@/components/ui/button'
 import Loader from '@/components/ui/Loader'
 import { useAuthContext } from '@/context/AuthContext'
 import { formatTimeAgo } from '@/lib/helpers/dateHelpers'
-import {
-  useDeletePost,
-  useGetPostDetails,
-} from '@/lib/react-query/queriesAndMutations'
+import { useDeletePost, useGetPostDetails } from '@/lib/react-query'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/_protected/posts/$id/')({

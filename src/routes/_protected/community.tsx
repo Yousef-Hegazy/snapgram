@@ -2,7 +2,7 @@ import InfiniteQueryContainer from '@/components/shared/InfiniteQueryContainer'
 import UserCard from '@/components/shared/UserCard'
 import Loader from '@/components/ui/Loader'
 import { useAuthContext } from '@/context/AuthContext'
-import { useInfiniteUsers } from '@/lib/react-query/queriesAndMutations'
+import { useInfiniteUsers } from '@/lib/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/_protected/community')({
