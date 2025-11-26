@@ -18,3 +18,11 @@ export const PostValidation = z.object({
     location: z.string().min(2, { error: "Location is too short" }).max(100, { error: "Location is too long" }),
     tags: z.string(),
 });
+
+export const ProfileUpdateValidation = z.object({
+    name: z.string().min(2, { error: "Too short" }),
+    username: z.string().min(2, { error: "Too short" }),
+    email: z.email().min(2, { error: "Email is too short" }),
+    bio: z.string().min(2, { error: "Bio is too short" }),
+    file: z.custom<File>().optional(),
+})

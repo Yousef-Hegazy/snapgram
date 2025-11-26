@@ -247,7 +247,7 @@
 }
 
 @utility profile-tab {
-  @apply flex-center gap-3 py-4 w-48 bg-dark-2 transition flex-1 xl:flex-initial;
+  @apply flex-center gap-3 py-4 w-48 transition flex-1 xl:flex-initial;
 }
 
 @utility saved-container {
@@ -348,7 +348,7 @@
 }
 
 @utility shad-button_dark_4 {
-  @apply h-12! bg-dark-4! px-5! text-light-1! flex! gap-2! cursor-pointer;
+  @apply h-12! bg-dark-4! px-5! text-light-1! flex! gap-2! cursor-pointer min-h-12!;
 }
 
 @utility shad-button_ghost {
@@ -384,8 +384,8 @@
   --color-primary-foreground: var(--primary-foreground);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--color-dark-2);
-  --color-muted-foreground: var(--color-light-2);
+  --color-muted: var(--color-dark-4);
+  --color-muted-foreground: var(--color-light-4);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
@@ -423,8 +423,8 @@
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
-  --muted: #1f1f22;
-  --muted-foreground: #5c5c7b;
+  --muted: var(--color-muted);
+  --muted-foreground: var(--color-muted-foreground);
   --accent: oklch(0.97 0 0);
   --accent-foreground: oklch(0.205 0 0);
   --destructive: oklch(0.577 0.245 27.325);
@@ -461,8 +461,8 @@
   --primary-foreground: oklch(0.205 0 0);
   --secondary: oklch(0.269 0 0);
   --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
+  --muted: var(--color-muted);
+  --muted-foreground: var(--color-muted-foreground);
   --accent: oklch(0.269 0 0);
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.704 0.191 22.216);

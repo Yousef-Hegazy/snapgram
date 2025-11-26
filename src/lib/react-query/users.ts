@@ -8,14 +8,18 @@ import { toast } from 'sonner'
 
 import { QUERY_KEYS } from './queryKeys'
 
+import { useAuthContext } from '@/context/AuthContext'
+import type { IUpdateUser } from '@/types'
 import {
   getInfiniteFollowers,
   getInfiniteFollowings,
   getInfiniteUsers,
   getUserById,
+  getUserForEdit,
   getUsers,
   removeFollow,
   toggleFollow,
+  updateUser,
 } from '../appwrite/usersUtils'
 
 export const useGetUsers = (limit?: number) => {
@@ -62,18 +66,6 @@ export const useToggleFollowUser = () => {
         queryKey: [QUERY_KEYS.GET_USER_BY_ID],
         refetchType: 'active',
       })
-
-      queryClient.invalidateQueries({
-        queryKey: ['infinite-followers'],
-        type: 'all',
-        refetchType: 'all',
-      })
-
-      queryClient.invalidateQueries({
-        queryKey: ['infinite-followings'],
-        type: 'all',
-        refetchType: 'all',
-      })
     },
     onError: (error) => {
       toast.error(error.message || 'Failed to toggle follow user')
@@ -105,18 +97,6 @@ export const useUnfollow = () => {
         queryKey: [QUERY_KEYS.GET_USER_BY_ID],
         refetchType: 'active',
       })
-
-      queryClient.invalidateQueries({
-        queryKey: ['infinite-followers'],
-        type: 'all',
-        refetchType: 'all',
-      })
-
-      queryClient.invalidateQueries({
-        queryKey: ['infinite-followings'],
-        type: 'all',
-        refetchType: 'all',
-      })
     },
     onError: (error) => {
       toast.error(error.message || 'Failed to toggle follow user')
@@ -133,6 +113,15 @@ export const useGetUserById = (userId: string) => {
   })
 }
 
+export const useGetUserForEdit = (userId: string) => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.GET_USER_BY_ID, userId, 'for-edit'],
+    queryFn: () => getUserForEdit(userId),
+    staleTime: 300_000, // 5 minutes
+    refetchOnMount: 'always',
+  })
+}
+
 export const useGetInfiniteFollowers = (userId: string, limit?: number) => {
   return useInfiniteQuery({
     queryKey: [QUERY_KEYS.GET_USERS, userId, 'infinite-followers'],
@@ -144,7 +133,6 @@ export const useGetInfiniteFollowers = (userId: string, limit?: number) => {
       return lastId
     },
     initialPageParam: '0',
-    refetchOnMount: false,
     staleTime: 300_000, // 5 minutes
   })
 }
@@ -160,7 +148,33 @@ export const useGetInfiniteFollowings = (userId: string, limit?: number) => {
       return lastId
     },
     initialPageParam: '0',
-    refetchOnMount: false,
     staleTime: 300_000, // 5 minutes
+  })
+}
+
+export const useUpdateUser = () => {
+  const queryClient = useQueryClient()
+  const { setUser } = useAuthContext()
+
+  return useMutation({
+    mutationFn: async (data: IUpdateUser) => updateUser(data),
+    onError: (error) => {
+      toast.error(error.message || 'Failed to update profile')
+    },
+    onSuccess: async (data) => {
+      setUser({
+        id: data.$id,
+        bio: data.bio || '',
+        email: data.email,
+        name: data.name,
+        imageUrl: data.imageUrl,
+        followeesCount: data.followeesCount || 0,
+        followersCount: data.followersCount || 0,
+        username: data.username || '',
+        postCount: data.postCount || 0,
+      })
+
+      queryClient.setQueryData([QUERY_KEYS.GET_CURRENT_USER], data)
+    },
   })
 }

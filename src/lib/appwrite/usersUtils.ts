@@ -1,6 +1,8 @@
-import { appwriteConfig, database } from '@/appwrite/config'
+import { account, appwriteConfig, database, storage } from '@/appwrite/config'
 import type { Follows, Saves, Users } from '@/appwrite/types/appwrite'
-import { ID, Query } from 'appwrite'
+import type { IUpdateUser } from '@/types'
+import { ID, ImageGravity, Query } from 'appwrite'
+import { deleteFile, uploadFile } from './storageUtils'
 
 export async function getUsers(limit?: number) {
   const queries = [
@@ -27,6 +29,16 @@ export async function getUserById(userId: string) {
     tableId: appwriteConfig.usersTableId,
     rowId: userId,
     queries: [Query.select(['*', 'followers.follower'])],
+  })
+
+  return user
+}
+
+export async function getUserForEdit(userId: string) {
+  const user = await database.getRow<Users>({
+    databaseId: appwriteConfig.databaseId,
+    tableId: appwriteConfig.usersTableId,
+    rowId: userId,
   })
 
   return user
@@ -183,7 +195,11 @@ export async function getInfiniteLikedPostsByUser(
   return likes
 }
 
-export async function getInfiniteFollowers(userId: string, lastId: string, limit?: number) {
+export async function getInfiniteFollowers(
+  userId: string,
+  lastId: string,
+  limit?: number,
+) {
   const queries = [
     Query.equal('followee', userId),
     Query.orderDesc('$createdAt'),
@@ -204,7 +220,11 @@ export async function getInfiniteFollowers(userId: string, lastId: string, limit
   return followers
 }
 
-export async function getInfiniteFollowings(userId: string, lastId: string, limit?: number) {
+export async function getInfiniteFollowings(
+  userId: string,
+  lastId: string,
+  limit?: number,
+) {
   const queries = [
     Query.equal('follower', userId),
     Query.orderDesc('$createdAt'),
@@ -223,4 +243,58 @@ export async function getInfiniteFollowings(userId: string, lastId: string, limi
   })
 
   return followers
+}
+
+export async function updateUser(user: IUpdateUser) {
+  const { $id: accountId } = await account.get()
+
+  if (user.userId !== accountId) {
+    throw new Error('Unauthorized')
+  }
+
+  const dbUser = await database.getRow<Users>({
+    databaseId: appwriteConfig.databaseId,
+    tableId: appwriteConfig.usersTableId,
+    rowId: user.userId,
+  })
+
+  const image = {
+    id: dbUser.imageId,
+    url: dbUser.imageUrl,
+  }
+
+  if (user.file.length > 0 && user.file[0]) {
+    if (dbUser.imageId) {
+      await deleteFile(dbUser.imageId)
+    }
+
+    const uploadedFile = await uploadFile(user.file[0])
+    image.id = uploadedFile.$id
+    image.url = await storage.getFilePreview({
+      bucketId: appwriteConfig.storageId,
+      fileId: uploadedFile.$id,
+      height: 2000,
+      width: 2000,
+      gravity: ImageGravity.Top,
+      quality: 100,
+    })
+  }
+
+  const updatedUser = await database.updateRow<Users>({
+    databaseId: appwriteConfig.databaseId,
+    tableId: appwriteConfig.usersTableId,
+    rowId: user.userId,
+    data: {
+      name: user.name,
+      bio: user.bio,
+      imageId: image.id,
+      imageUrl: image.url,
+    },
+  })
+
+  if (!updatedUser.$id) {
+    throw new Error('Failed to update user')
+  }
+
+  return updatedUser
 }
