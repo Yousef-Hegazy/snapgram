@@ -21,6 +21,7 @@ import {
   toggleFollow,
   updateUser,
 } from '../appwrite/usersUtils'
+import { useNavigate } from '@tanstack/react-router'
 
 export const useGetUsers = (limit?: number) => {
   return useQuery({
@@ -155,6 +156,7 @@ export const useGetInfiniteFollowings = (userId: string, limit?: number) => {
 export const useUpdateUser = () => {
   const queryClient = useQueryClient()
   const { setUser } = useAuthContext()
+  const navigate = useNavigate()
 
   return useMutation({
     mutationFn: async (data: IUpdateUser) => updateUser(data),
@@ -175,6 +177,15 @@ export const useUpdateUser = () => {
       })
 
       queryClient.setQueryData([QUERY_KEYS.GET_CURRENT_USER], data)
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_USER_BY_ID, data.$id],
+        refetchType: 'active',
+      })
+
+      navigate({
+        to: '/profile/$id',
+        params: { id: data.$id },
+      })
     },
   })
 }

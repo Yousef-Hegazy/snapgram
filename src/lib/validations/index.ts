@@ -24,5 +24,5 @@ export const ProfileUpdateValidation = z.object({
     username: z.string().min(2, { error: "Too short" }),
     email: z.email().min(2, { error: "Email is too short" }),
     bio: z.string().min(2, { error: "Bio is too short" }),
-    file: z.custom<File>().optional(),
+    file: z.custom<File[]>().optional(),
 })

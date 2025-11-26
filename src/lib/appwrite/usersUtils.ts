@@ -263,14 +263,14 @@ export async function updateUser(user: IUpdateUser) {
     url: dbUser.imageUrl,
   }
 
-  if (user.file.length > 0 && user.file[0]) {
+  if (user.file) {
     if (dbUser.imageId) {
       await deleteFile(dbUser.imageId)
     }
 
-    const uploadedFile = await uploadFile(user.file[0])
+    const uploadedFile = await uploadFile(user.file)
     image.id = uploadedFile.$id
-    image.url = await storage.getFilePreview({
+    image.url = storage.getFilePreview({
       bucketId: appwriteConfig.storageId,
       fileId: uploadedFile.$id,
       height: 2000,

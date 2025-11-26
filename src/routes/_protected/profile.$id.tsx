@@ -8,7 +8,7 @@ import Loader from '@/components/ui/Loader'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useAuthContext } from '@/context/AuthContext'
 import useIsFollowing from '@/hooks/useIsFollowing'
-import { useGetUserById } from '@/lib/react-query'
+import { useGetUserById, useToggleFollowUser } from '@/lib/react-query'
 import { cn } from '@/lib/utils'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { Heart, List, PersonStanding, Users } from 'lucide-react'
@@ -23,6 +23,9 @@ function RouteComponent() {
   const { data: profile, isPending } = useGetUserById(id)
 
   const { isFollowing, isCurrentUser } = useIsFollowing(user.id, profile)
+
+  const { mutate: toggleFollow, isPending: isTogglingFollow } =
+    useToggleFollowUser()
 
   return (
     <div className="profile-container">
@@ -113,7 +116,11 @@ function RouteComponent() {
                       'shad-button_primary': !isFollowing,
                       'shad-button_dark_4': isFollowing,
                     })}
+                    onClick={() =>
+                      toggleFollow({ userId: profile.$id, followerId: user.id })
+                    }
                   >
+                    {isTogglingFollow ? <Loader /> : ''}{' '}
                     {isFollowing ? 'Unfollow' : 'Follow'}
                   </Button>
                 </div>

@@ -60,7 +60,7 @@ function RouteComponent() {
       bio: data.bio,
       name: data.name,
       userId: id,
-      file: data.file ? [data.file] : [],
+      file: data.file && data.file.length > 0 ? data.file[0] : undefined,
       imageId: '',
       imageUrl: '',
     });

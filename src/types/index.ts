@@ -21,7 +21,7 @@ export type IUpdateUser = {
   bio: string;
   imageId: string;
   imageUrl: URL | string;
-  file: File[];
+  file?: File;
 };
 
 export type INewPost = {
