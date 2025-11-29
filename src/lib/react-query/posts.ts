@@ -45,7 +45,6 @@ export const useCreatePost = () => {
       await queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_POSTS],
         type: 'all',
-        refetchType: 'active'
       })
       navigate({
         to: '/',
@@ -76,7 +75,6 @@ export const useEditPost = () => {
       await queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_POSTS],
         type: 'all',
-        refetchType: 'active'
       })
 
       navigate({
@@ -105,7 +103,6 @@ export const useDeletePost = () => {
       await queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_POSTS],
         type: 'all',
-        refetchType: 'active'
       })
     },
     onError: (error) => {
@@ -133,7 +130,6 @@ export const useLikePost = () => {
       await queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_POSTS],
         type: 'all',
-        refetchType: 'active'
       })
     },
     onError: (error) => {
@@ -157,7 +153,6 @@ export const useSavePost = () => {
       await queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_POSTS],
         type: 'all',
-        refetchType: 'active'
       })
     },
     onError: (error) => {

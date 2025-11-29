@@ -10,7 +10,7 @@ const FileUploader = ({
   fieldChange: (...event: Array<any>) => void
   mediaUrl: string | undefined
 }) => {
-  const [file, setFile] = useState<Array<File>>([])
+  const [_, setFile] = useState<Array<File>>([])
   const [fileUrl, setFileUrl] = useState(mediaUrl || '')
   const onDrop = (acceptedFiles: Array<FileWithPath>) => {
     setFile(acceptedFiles.length > 0 ? acceptedFiles : [])
